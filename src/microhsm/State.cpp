@@ -10,20 +10,15 @@ namespace microhsm
     {
     }
 
-    void State::setHSM(HSM* hsm)
-    {
-        this->hsm = hsm;
-    }
-
     bool State::no_transition()
     {
         return false;
     }
 
-    bool State::transition_external(State* target, s_transition *t, f_transition_effect effect)
+    bool State::transition_external(unsigned int target_ID, s_transition *t, f_transition_effect effect)
     {
-        t->source = this;
-        t->target = target;
+        t->source_ID = ID;
+        t->target_ID = target_ID;
         t->kind = eKIND_EXTERNAL;
         t->effect = effect;
         return true;
@@ -32,17 +27,17 @@ namespace microhsm
     bool State::transition_internal(s_transition *t, f_transition_effect effect)
     {
     
-        t->source = this;
-        t->target = this;
+        t->source_ID = ID;
+        t->target_ID = ID;
         t->kind = eKIND_INTERNAL;
         t->effect = effect;
         return true;
     }
 
-    bool State::transition_local(State* target, s_transition *t, f_transition_effect effect)
+    bool State::transition_local(unsigned int target_ID, s_transition *t, f_transition_effect effect)
     {
-        t->source = this;
-        t->target = target;
+        t->source_ID = ID;
+        t->target_ID = target_ID;
         t->kind = eKIND_LOCAL;
         t->effect = effect;
         return true;

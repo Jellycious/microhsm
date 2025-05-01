@@ -6,9 +6,13 @@ BUILD_CMD="cmake -S ${ROOT_DIR} -B ${BUILD_DIR} && make -C ${BUILD_DIR}"
 
 TEST_BINARY=$BUILD_DIR/bin/microhsm_tests
 
-USAGE_MSG="USAGE: ./dev.sh [-d | --dev | -t | --test] [
+USAGE_MSG="USAGE: ./dev.sh [OPTIONS]
 
-DESCRIPTION: Compile project or run tests
+DESCRIPTION: Utility script that eases development
+
+OPTIONS:
+    -d, --dev       = Watch changes in source code and build/test upon changes
+    -t, --test      = Build and Test library
 "
 
 
@@ -54,10 +58,12 @@ fi
 if [[ -n $RUNDEV ]]; then
     echo "Running dev server..."
     while inotifywait -r -e close_write $ROOT_DIR/tests $ROOT_DIR/src $ROOT_DIR/include; do
+        echo "Building Project"
         build
         if [[ $? -eq 0 ]]; then
+            echo "Running tests:"
+            echo ""
             run_test
-            echo "running test"
         fi
     done
 fi

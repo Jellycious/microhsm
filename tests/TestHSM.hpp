@@ -27,18 +27,22 @@ namespace microhsm_tests
     {
         public:
             StateS(State* initial) : State(eSTATE_S, nullptr, initial) {};
+            bool match(unsigned int event, s_transition* t, void* ctx) override;
+
     };
 
     class StateS1 : public State
     {
         public:
-            StateS1(StateS* parent) : State(eSTATE_S1, parent, nullptr) {};
+            StateS1(State* parent) : State(eSTATE_S1, parent, nullptr) {};
+            bool match(unsigned int event, s_transition* t, void* ctx) override;
     };
 
     class StateS2 : public State
     {
         public:
-            StateS2(StateS* parent) : State(eSTATE_S2, parent, nullptr) {};
+            StateS2(State* parent) : State(eSTATE_S2, parent, nullptr) {};
+            bool match(unsigned int event, s_transition* t, void* ctx) override;
     };
 
     /* HSM Declaration */
@@ -46,17 +50,9 @@ namespace microhsm_tests
     {
     public:
 
-        void init(void) override;
+        TestHSM() : HSM(&state_s) {};
 
-        State* get_state(unsigned int ID) override
-        {
-            if (ID >= eSTATE_COUNT) {
-                return nullptr;
-            }
-            else {
-                return states[ID];
-            }
-        }
+        State* get_state(unsigned int ID) override;
 
         StateS state_s = StateS(&state_s1);
         StateS1 state_s1 = StateS1(&state_s);

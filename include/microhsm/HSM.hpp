@@ -5,6 +5,7 @@
 
 namespace microhsm
 {
+    #define EVENT_ANONYMOUS 0
 
     /// @brief Dispatch return status
     enum e_status_dispatch {
@@ -16,6 +17,10 @@ namespace microhsm
     class HSM
     {
         public:
+
+            explicit HSM(State* init_state) :
+                cur_state(init_state),
+                init_state(init_state) {};
 
             /**
              * @brief Dispatch event to HSM
@@ -29,12 +34,34 @@ namespace microhsm
 
             /**
              * @brief Initialize HSM
+             * @param Context object
+             * Set the hsm to the underlying states
              */
-            virtual void init(void) = 0;
+            void init(void* ctx);
 
+            /**
+             * @brief Get state
+             * @param ID Unique Identifier of state
+             * @return State associated to ID
+             */
             virtual State* get_state(unsigned int ID) = 0;
 
+            /**
+             * @brief Get current state of HSM
+             * @return Current state of HSM
+             */
+            State* get_current_state(void);
+
+            /**
+             * @brief Check whether HSM is in state
+             * @param ID ID of state
+             * @return Whether the cur_state or one of its parents is `ID`
+             */
+            bool in_state(unsigned int ID);
+
         protected:
+
+            State* init_state;
             State* cur_state;
     };
 }

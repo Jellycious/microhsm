@@ -19,8 +19,8 @@ namespace microhsm
      * @struct Representation of transition
      */
     typedef struct {
-        State* source;                  //< Source state of transition
-        State* target;                  //< Target state of transition
+        unsigned int source_ID;
+        unsigned int target_ID;
         e_transition_kind kind;         //< Type of transition
         f_transition_effect effect;     //< Effect of transition
     } s_transition;
@@ -32,12 +32,6 @@ namespace microhsm
 
             State(unsigned int ID, State* parent, State* initial);
             
-            /**
-             * @brief Set the HSM that is associated with this state
-             * @param hsm Pointer to associated Hierarchical State Machine
-             */
-            void setHSM(HSM* hsm);
-
             /**
              * @brief Perform state entry
              * @param ctx Context object
@@ -62,13 +56,12 @@ namespace microhsm
              */
             virtual bool match(unsigned int event, s_transition* t, void* ctx);
 
-
-            HSM* hsm = nullptr;
-
             /// @brief Parent state (set to `nullptr` if state is not a substate)
-            const State* parent;
+            State* const parent;
             /// @brief Initial state (set to `nullptr` for non-composite states)
-            const State* initial;
+            State* const initial;
+            /// @brief Hierarchical State Machine
+            HSM* hsm = nullptr;
             /// @brief Unique identifier of state
             const unsigned int ID; // Unique identifier of state
 
@@ -87,7 +80,7 @@ namespace microhsm
              * @param t Pointer to transition object
              * @param effect Effect to execute upon transition
              */
-            bool transition_external(State* target, s_transition* t, f_transition_effect effect);
+            bool transition_external(unsigned int target_ID, s_transition* t, f_transition_effect effect);
 
             /**
              * @brief Matched a local transition
@@ -97,7 +90,7 @@ namespace microhsm
              * @param t Pointer to transition object
              * @param effect Effect to execute upon transition
              */
-            bool transition_local(State* target, s_transition* t, f_transition_effect effect);
+            bool transition_local(unsigned int target_ID, s_transition* t, f_transition_effect effect);
 
             /**
              * @brief Matched an internal transition.
