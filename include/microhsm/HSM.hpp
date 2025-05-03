@@ -97,6 +97,7 @@ namespace microhsm
 
             /**
              * @brief Find least common ancestor
+             * @note As side-effect creates a path from LCA to `b`
              * @param a Pointer to first state
              * @param b Pointer to second state
              * @return Least common ancestor, `nullptr` if LCA doesn't exist

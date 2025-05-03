@@ -5,42 +5,30 @@ namespace microhsm_tests
 
             void TestCTX::init()
             {
-                effect1Count_ = 0;
-                effect2Count_ = 0;
-                effect3Count_ = 0;
+                flag_ = false;
             }
 
-            unsigned int TestCTX::getEffectCount1()
+            unsigned int TestCTX::getFlag()
             {
-                return effect1Count_;
+                return flag_;
             }
 
-            unsigned int TestCTX::getEffectCount2()
-            {
-                return effect2Count_;
-            }
-
-            unsigned int TestCTX::getEffectCount3()
-            {
-                return effect3Count_;
-            }
-
-            void TestCTX::effect1(void* ctx)
+            void TestCTX::setFlag(void* ctx)
             {
                 TestCTX* context = static_cast<TestCTX*>(ctx);
-                context->effect1Count_++;
+                context->flag_ = true;
             }
 
-            void TestCTX::effect2(void* ctx)
+            void TestCTX::clearFlag(void* ctx)
             {
                 TestCTX* context = static_cast<TestCTX*>(ctx);
-                context->effect2Count_++;
+                context->flag_ = false;
             }
 
-            void TestCTX::effect3(void* ctx)
+            bool TestCTX::guardFlag(void* ctx)
             {
                 TestCTX* context = static_cast<TestCTX*>(ctx);
-                context->effect3Count_++;
+                return context->flag_;
             }
 
 }

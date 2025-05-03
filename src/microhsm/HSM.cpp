@@ -197,6 +197,8 @@ namespace microhsm
 
         while(s1 != s2) {
             // Move up from deepest state 
+            if (s1 == nullptr || s2 == nullptr) return nullptr;
+
             if (s1->depth > s2->depth) {
                 s1 = s1->parent;
             }
