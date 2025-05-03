@@ -57,6 +57,12 @@ namespace microhsm
             virtual bool match(unsigned int event, sTransition* t, void* ctx);
 
             /**
+             * @brief Optional initialization function
+             * @param ctx Context object
+             */
+            virtual void init(void* ctx) {};
+
+            /**
              * @brief Check whether state is a composite state
              * A state with a non-null initial state is considered composite
              * @return `true` if state is composite

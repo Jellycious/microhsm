@@ -24,6 +24,20 @@ namespace microhsm
                 initState(initState) {};
 
             /**
+             * @brief Get state
+             * @param ID Unique Identifier of state
+             * @return State associated to ID
+             */
+            virtual State* getState(unsigned int ID) = 0;
+
+            /**
+             * @brief Get number of states
+             * @note It is assumed for the IDs 0-`getNumberOfStates()` are all valid IDs
+             * @return Number of states 
+             */
+            virtual unsigned int getStateCount(void) = 0;
+
+            /**
              * @brief Dispatch event to HSM
              * @param signal Event to dispatch
              * @param ctx Pointer to context object
@@ -41,13 +55,6 @@ namespace microhsm
             void init(void* ctx);
 
             /**
-             * @brief Get state
-             * @param ID Unique Identifier of state
-             * @return State associated to ID
-             */
-            virtual State* getState(unsigned int ID) = 0;
-
-            /**
              * @brief Get current state of HSM
              * @return Current state of HSM
              */
@@ -62,36 +69,12 @@ namespace microhsm
 
         protected:
 
+            /// @brief Initial state (`nullptr` for leaf states)
             State* initState;
+            /// @brief Current active state (always a leaf state)
             State* curState;
 
         private:
-
-            /**
-             * @brief Try to match event to State or one of its ancestors
-             * @param event Event to match
-             * @param t Pointer to transition object.
-             * @param ctx Context object
-             * @retval `false` No match was found
-             * @retval `true` Match was found, `t` will contain transition description
-             */
-            bool matchStateOrAncestor_(unsigned int event, sTransition* t, void* ctx);
-
-            /**
-             * @brief Perform transition on current state
-             * @param t Pointer to transition description
-             * @param ctx Context object
-             * @return eStatus
-             */
-            eStatus performTransition_(const sTransition* t, void* ctx);
-
-            /**
-             * @brief Perform internal transition on current state
-             * @param t Pointer to transition description
-             * @param ctx Context object
-             * @return eStatus
-             */
-            eStatus performTransitionInternal_(const sTransition* t, void* ctx);
 
             /**
              * @brief Exits states until the `target` state is reached.
@@ -120,9 +103,61 @@ namespace microhsm
              */
             static State* findLCA_(State* a, State* b);
 
+            /**
+             * @brief Perform entry action
+             * @param s State
+             * @param ctx Context object
+             */
+            static void performEntry_(State* s, void* ctx);
 
+            /**
+             * @brief Perform exit action
+             * @param s State
+             * @param ctx Context object
+             */
+            static void performExit_(State* s, void* ctx);
 
-            
+            /**
+             * @brief Enter initial pseudostates
+             * @note Will continue until the last possible initial state
+             * @param s State
+             * @param ctx Context object
+             * @return Last state that was entered
+             */
+            static State* enterInitialStates_(State* s, void* ctx);
+
+            /**
+             * @brief Perform effect action
+             * @param t Pointer to transition descriptor
+             * @param ctx Context object
+             */
+            static void performEffect_(sTransition* t, void* ctx);
+
+            /**
+             * @brief Try to match event to State or one of its ancestors
+             * @param event Event to match
+             * @param t Pointer to transition object.
+             * @param ctx Context object
+             * @retval `false` No match was found
+             * @retval `true` Match was found, `t` will contain transition description
+             */
+            bool matchStateOrAncestor_(unsigned int event, sTransition* t, void* ctx);
+
+            /**
+             * @brief Perform transition on current state
+             * @param t Pointer to transition description
+             * @param ctx Context object
+             * @return eStatus
+             */
+            eStatus performTransition_(const sTransition* t, void* ctx);
+
+            /**
+             * @brief Perform internal transition on current state
+             * @param t Pointer to transition description
+             * @param ctx Context object
+             * @return eStatus
+             */
+            eStatus performTransitionInternal_(const sTransition* t, void* ctx);
     };
 }
 

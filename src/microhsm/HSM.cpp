@@ -8,12 +8,16 @@ namespace microhsm
 
     void HSM::init(void* ctx)
     {
-        State* s = this->initState;
-
-        // Walk down until the lowest initial state
-        while (s->initial != nullptr) {
-            s = s->initial;
+        for (unsigned int id = 0; id < this->getStateCount(); id++) {
+            this->getState(id)->init(ctx);
         }
+
+        // Perform entry on initial state
+        State* s = this->initState;
+        this->performEntry_(s, ctx);
+
+        // Walk down until the leaf initial state
+        s = enterInitialStates_(s, ctx);
 
         this->curState = s;
 
@@ -56,8 +60,15 @@ namespace microhsm
         // Match event to state
         bool match = this->matchStateOrAncestor_(signal, &t, ctx);
         if (!match) {
+#ifdef MICROHSM_TRACING
+            MICROHSM_TRACE_DISPATCH_IGNORED(signal);
+#endif
             return eEVENT_IGNORED;
         }
+
+#ifdef MICROHSM_TRACING
+            MICROHSM_TRACE_DISPATCH_MATCHED(signal, t.sourceID);
+#endif
 
         // Perform transition
         status = this->performTransition_(&t, ctx);
@@ -93,7 +104,8 @@ namespace microhsm
          *      6. Perform transition effect
          *      7. Handle re-entry source (kind = external)
          *      8. Enter until reaching target state
-         *      9. Update `curState`
+         *      9. Enter initial pseudo state(s)
+         *      10. Update `curState`
          */
 
         State* s = nullptr;
@@ -115,27 +127,23 @@ namespace microhsm
         if (s == nullptr) return eTRANSITION_ERROR;
 
         // 5. Handle exit of source (local v.s. external)
-        if(t->kind == eKIND_EXTERNAL && lca == source) {
-            lca->exit(ctx);
-        }
+        if(t->kind == eKIND_EXTERNAL && lca == source) performExit_(lca, ctx);
 
         // 6. Perform transition effect
-        if (t->effect != nullptr) {
-            t->effect(ctx);
-        }
+        if (t->effect != nullptr) t->effect(ctx);
 
         // 7. Handle re-entry of source (local v.s. external)
-        if(t->kind == eKIND_EXTERNAL && lca == source) {
-            lca->entry(ctx);
-        }
+        if(t->kind == eKIND_EXTERNAL && lca == source) performEntry_(lca, ctx);
         
         // 8. Enter until reaching target state
         s = enterUntilTarget_(lca, target, ctx);
         if (s == nullptr) return eTRANSITION_ERROR;
 
-        // 9. Update state
-        this->curState = target;
+        // 9. Enter initial pseudo state(s)
+        s = enterInitialStates_(s, ctx);
 
+        // 10. Update state
+        this->curState = s;
         return eOK;
     }
 
@@ -155,7 +163,7 @@ namespace microhsm
         while (s != nullptr) {
             if (s->ID == target->ID) break;
 
-            s->exit(ctx);
+            performExit_(s, ctx);
             s = s->parent;
         }
         return s;
@@ -177,7 +185,7 @@ namespace microhsm
         // Perform enter effects until target state
         while (s != target) {
             s = s->tmp;
-            s->entry(ctx);
+            performEntry_(s, ctx);
         }
         return s;
     }
@@ -202,6 +210,39 @@ namespace microhsm
         }
 
         return s1;
+    }
+
+    void HSM::performEntry_(State* s, void* ctx)
+    {
+#if MICROHSM_TRACING == 1
+        MICROHSM_TRACE_ENTRY(s->ID);
+#endif
+        s->entry(ctx);
+    }
+
+    void HSM::performExit_(State* s, void* ctx)
+    {
+#if MICROHSM_TRACING == 1
+        MICROHSM_TRACE_EXIT(s->ID);
+#endif
+        s->exit(ctx);
+    }
+
+    State* HSM::enterInitialStates_(State* state, void* ctx)
+    {
+        State* s = state;
+        while (s->initial != nullptr) {
+            s = s->initial;
+            performEntry_(s, ctx);
+        }
+        return s;
+    }
+
+    void HSM::performEffect_(sTransition* t, void* ctx)
+    {
+        if (t->effect != nullptr) {
+            t->effect(ctx);
+        }
     }
 
 }

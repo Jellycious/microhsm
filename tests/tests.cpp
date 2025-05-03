@@ -10,38 +10,78 @@ namespace microhsm_tests
     static TestCTX testCTX = TestCTX();
     
     // Setup and Teardown
-    void setUp(void) 
-    {
+    void setUp(void) {
         testCTX.init();
         testHSM.init(static_cast<void*>(&testCTX));
     };
 
     void tearDown(void) {};
-    
 
-    // Test functions
-    void test_transitions(void)
+    void test_initial_configuration()
     {
-        eStatus status;
         TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S));
         TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S1));
+        TEST_ASSERT_EQUAL(1, testHSM.state_s.getEntryCount());
+        TEST_ASSERT_EQUAL(1, testHSM.state_s1.getEntryCount());
+        TEST_ASSERT_EQUAL(0, testHSM.state_s2.getEntryCount());
+        TEST_ASSERT_EQUAL(0, testHSM.state_s.getExitCount());
+        TEST_ASSERT_EQUAL(0, testHSM.state_s1.getExitCount());
+        TEST_ASSERT_EQUAL(0, testHSM.state_s2.getExitCount());
+        TEST_ASSERT_EQUAL(0, testCTX.getEffectCount1());
+    }
+
+    void test_transition_c()
+    {
+        eStatus status;
+
         // C: S1 -> S2 
         status = testHSM.dispatch(eEVENT_C, &testCTX);
         TEST_ASSERT_EQUAL(eOK, status);
         TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S));
         TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S2));
+        TEST_ASSERT_EQUAL(1, testHSM.state_s.getEntryCount());
+        TEST_ASSERT_EQUAL(1, testHSM.state_s1.getEntryCount());
+        TEST_ASSERT_EQUAL(1, testHSM.state_s2.getEntryCount());
+        TEST_ASSERT_EQUAL(1, testCTX.getEffectCount1());
+
         // C: S2 -> S1 
         status = testHSM.dispatch(eEVENT_C, &testCTX);
         TEST_ASSERT_EQUAL(eOK, status);
         TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S));
         TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S1));
+        TEST_ASSERT_EQUAL(1, testHSM.state_s.getEntryCount());
+        TEST_ASSERT_EQUAL(2, testHSM.state_s1.getEntryCount());
+        TEST_ASSERT_EQUAL(1, testHSM.state_s2.getEntryCount());
+        TEST_ASSERT_EQUAL(2, testCTX.getEffectCount1());
+    }
+
+    void test_transition_d()
+    {
+        eStatus status;
+
+        status = testHSM.dispatch(eEVENT_D, &testCTX);
+        TEST_ASSERT_EQUAL(eOK, status);
+        TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S));
+        TEST_ASSERT_EQUAL(1, testHSM.state_s.getEntryCount());
+        TEST_ASSERT_EQUAL(2, testHSM.state_s1.getEntryCount());
+        TEST_ASSERT_EQUAL(0, testHSM.state_s2.getEntryCount());
+        TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S1));
+    }
+
+    // Test functions
+    void test_transitions(void)
+    {
+        RUN_TEST(test_initial_configuration);
+        RUN_TEST(test_transition_c);
+        RUN_TEST(test_transition_d);
+
     }
 
     // Main
     int main(void)
     {
         UNITY_BEGIN();
-        RUN_TEST(test_transitions);
+        test_transitions();
         return UNITY_END();
     }
     

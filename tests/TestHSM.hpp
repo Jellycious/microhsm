@@ -1,3 +1,9 @@
+/**
+ * @file TestHSM.hpp
+ * @brief TestHSM used for testing
+ * The HSM is based on an example given in the book:
+ *      Practical Statecharts in C/C++ by Miro Samek, Ph.D
+ */
 #include <microhsm/HSM.hpp>
 #include <microhsm/State.hpp>
 
@@ -7,10 +13,11 @@ namespace microhsm_tests
 {
     /// @brief Event enumerations
     enum e_events : unsigned int {
-        eEVENT_ANONYMOUS = 0,
+        eEVENT_ANONYMOUS = 0, /// @brief 0 is reserved for anonymous events
         eEVENT_A,
         eEVENT_B,
         eEVENT_C,
+        eEVENT_D,
     };
 
     /// @brief State enumerations
@@ -21,34 +28,47 @@ namespace microhsm_tests
         eSTATE_COUNT,
     };
 
+    class TestState : public State
+    {
+        public:
+
+            TestState(unsigned int ID, State* parent, State* initial) :
+                State(ID, parent, initial) {};
+
+            void entry(void* ctx) override;
+            void exit(void* ctx) override;
+            void init(void* ctx) override;
+
+            void resetCounts();
+            unsigned int getEntryCount();
+            unsigned int getExitCount();
+
+        private:
+            unsigned int entryCount_ = 0;
+            unsigned int exitCount_ = 0;
+    };
+
 
     /* State Declarations */
-    class StateS : public State
+    class StateS : public TestState
     {
         public:
-            StateS(State* initial) : State(eSTATE_S, nullptr, initial) {};
+            StateS(State* initial) : TestState(eSTATE_S, nullptr, initial) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
-            void entry(void* ctx) override;
-            void exit(void* ctx) override;
-
     };
 
-    class StateS1 : public State
+    class StateS1 : public TestState
     {
         public:
-            StateS1(State* parent) : State(eSTATE_S1, parent, nullptr) {};
+            StateS1(State* parent) : TestState(eSTATE_S1, parent, nullptr) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
-            void entry(void* ctx) override;
-            void exit(void* ctx) override;
     };
 
-    class StateS2 : public State
+    class StateS2 : public TestState
     {
         public:
-            StateS2(State* parent) : State(eSTATE_S2, parent, nullptr) {};
+            StateS2(State* parent) : TestState(eSTATE_S2, parent, nullptr) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
-            void entry(void* ctx) override;
-            void exit(void* ctx) override;
     };
 
     /* HSM Declaration */
@@ -59,6 +79,7 @@ namespace microhsm_tests
         TestHSM() : HSM(&state_s) {};
 
         State* getState(unsigned int ID) override;
+        unsigned int getStateCount() override;
 
         StateS state_s = StateS(&state_s1);
         StateS1 state_s1 = StateS1(&state_s);

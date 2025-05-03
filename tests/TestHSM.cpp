@@ -1,15 +1,14 @@
-#include "microhsm/HSM.hpp"
-#include <TestHSM.hpp>
-
-#include <cstdio>
-#include <iostream>
-
-/*
- * TODO: Setup match function.
- *
- * Setup match function such that it can link to any other state
- *
+/**
+ * @file TestHSM.cpp
+ * @brief TestHSM used for testing
+ * The HSM is based on an example given in the book:
+ *      Practical Statecharts in C/C++ by Miro Samek, Ph.D
  */
+
+#include <microhsm/HSM.hpp>
+
+#include <TestHSM.hpp>
+#include <TestCTX.hpp>
 
 namespace microhsm_tests
 {
@@ -19,57 +18,70 @@ namespace microhsm_tests
         return this->states[ID];
     }
 
+    unsigned int TestHSM::getStateCount()
+    {
+        return eSTATE_COUNT;
+    }
+
+    void TestState::resetCounts()
+    {
+        this->entryCount_ = 0;
+        this->exitCount_ = 0;
+    }
+
+    unsigned int TestState::getEntryCount()
+    {
+        return entryCount_;
+    }
+    unsigned int TestState::getExitCount()
+    {
+        return exitCount_;
+    }
+
+    void TestState::entry(void* ctx)
+    {
+        entryCount_++;
+    }
+
+    void TestState::exit(void* ctx)
+    {
+        exitCount_++;
+    }
+
+    void TestState::init(void* ctx)
+    {
+        this->entryCount_ = 0;
+        this->exitCount_ = 0;
+    }
+
     bool StateS::match(unsigned int event, sTransition* t, void* ctx)
     {
         return noTransition();
     }
 
-    void StateS::entry(void* ctx)
-    {
-        std::cout << "S(entry)" << std::endl;
-    }
-    void StateS::exit(void* ctx)
-    {
-        std::cout << "S(exit)" << std::endl;
-    }
-
-
     bool StateS1::match(unsigned int event, sTransition* t, void* ctx)
     {
+        TestCTX* c = static_cast<TestCTX*>(ctx);
         switch(event) {
             case eEVENT_C:
-                return transitionExternal(eSTATE_S2, t, nullptr);
+                return transitionExternal(eSTATE_S2, t, c->effect1);
+            case eEVENT_D:
+                return transitionExternal(eSTATE_S, t, c->effect2);
             default:
                 break;
         }
         return noTransition();
-    }
-    void StateS1::entry(void* ctx)
-    {
-        std::cout << "S1(entry)" << std::endl;
-    }
-    void StateS1::exit(void* ctx)
-    {
-        std::cout << "S1(exit)" << std::endl;
     }
 
     bool StateS2::match(unsigned int event, sTransition* t, void* ctx)
     {
+        TestCTX* c = static_cast<TestCTX*>(ctx);
         switch(event) {
             case eEVENT_C:
-                return transitionExternal(eSTATE_S1, t, nullptr);
+                return transitionExternal(eSTATE_S1, t, c->effect1);
             default:
                 break;
         }
         return noTransition();
     }
-    void StateS2::entry(void* ctx)
-    {
-        std::cout << "S2(entry)" << std::endl;
-    }
-    void StateS2::exit(void* ctx)
-    {
-        std::cout << "S2(exit)" << std::endl;
-    }
-
 };

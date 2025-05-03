@@ -1,6 +1,7 @@
 add_executable(microhsm_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/unity/unity.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TestHSM.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TestCTX.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests.cpp
 )
 
