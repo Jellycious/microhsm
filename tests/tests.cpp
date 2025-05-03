@@ -1,3 +1,4 @@
+#include "microhsm/HSM.hpp"
 #include <unity.h>
 
 #include <TestHSM.hpp>
@@ -19,17 +20,28 @@ namespace microhsm_tests
     
 
     // Test functions
-    void test_function_simple(void)
+    void test_transitions(void)
     {
-        TEST_ASSERT_TRUE(testHSM.in_state(eSTATE_S));
-        TEST_ASSERT_TRUE(testHSM.in_state(eSTATE_S1));
+        eStatus status;
+        TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S));
+        TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S1));
+        // C: S1 -> S2 
+        status = testHSM.dispatch(eEVENT_C, &testCTX);
+        TEST_ASSERT_EQUAL(eOK, status);
+        TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S));
+        TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S2));
+        // C: S2 -> S1 
+        status = testHSM.dispatch(eEVENT_C, &testCTX);
+        TEST_ASSERT_EQUAL(eOK, status);
+        TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S));
+        TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S1));
     }
 
     // Main
     int main(void)
     {
         UNITY_BEGIN();
-        RUN_TEST(test_function_simple);
+        RUN_TEST(test_transitions);
         return UNITY_END();
     }
     

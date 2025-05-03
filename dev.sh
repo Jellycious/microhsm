@@ -2,9 +2,13 @@
 
 ROOT_DIR=$(dirname $0)
 BUILD_DIR=$ROOT_DIR/build
-BUILD_CMD="cmake -S ${ROOT_DIR} -B ${BUILD_DIR} && make -C ${BUILD_DIR}"
 
-TEST_BINARY=$BUILD_DIR/bin/microhsm_tests
+BUILD_CONFIG=Debug
+
+BUILD_CMD="cmake -S ${ROOT_DIR} -B ${BUILD_DIR} -DCMAKE_BUILD_TYPE=Debug && make -C ${BUILD_DIR}"
+BUILD_CMD_RELEASE="cmake -S ${ROOT_DIR} -B ${BUILD_DIR} -DCMAKE_BUILD_TYPE=Release && make -C ${BUILD_DIR}"
+
+TEST_BINARY=$BUILD_DIR/Debug/bin/microhsm_tests
 
 USAGE_MSG="USAGE: ./dev.sh [OPTIONS]
 
@@ -12,26 +16,26 @@ DESCRIPTION: Utility script that eases development
 
 OPTIONS:
     -d, --dev       = Watch changes in source code and build/test upon changes
-    -t, --test      = Build and Test library
+    -t, --test      = Run test library
+    -r, --release   = Release build
+    -c, --clean     = Clean before building
 "
 
 
 POSITIONAL_ARGS=()
 
 build() {
-    cmake -S ${ROOT_DIR} -B ${BUILD_DIR}
-    make -C ${BUILD_DIR}
+    cmake -S ${ROOT_DIR} -B ${BUILD_DIR}/${BUILD_CONFIG} -DCMAKE_BUILD_TYPE=${BUILD_CONFIG}
+    make -C ${BUILD_DIR}/${BUILD_CONFIG}
 }
 
 run_test() {
-    $TEST_BINARY
+    $TEST_BINARY/${BUILD_CONFIG}
 }
 
-# No arguments? Simply build
-if [[ $# -eq 0 ]]; then
-    build
-    exit $?
-fi;
+clean() {
+    rm -rf ${BUILD_DIR}
+}
 
 # Called with arguments
 while [[ $# -gt 0 ]]; do
@@ -44,11 +48,28 @@ while [[ $# -gt 0 ]]; do
             RUNDEV=1
             break
             ;;
+        -r|--release)
+            BUILD_CONFIG=Release
+            shift
+            ;;
+        -c|--clean)
+            CLEANFIRST=1
+            shift
+            ;;
         *)
+            echo "Incorrect parameter: $1"
+            echo ""
             echo "$USAGE_MSG"
             exit 1
     esac
 done
+
+# Always build target
+build
+
+if [[ -n $CLEANFIRST ]]; then
+    clean
+fi
 
 if [[ -n $RUNTEST ]]; then
     build

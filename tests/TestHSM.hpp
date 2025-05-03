@@ -27,7 +27,9 @@ namespace microhsm_tests
     {
         public:
             StateS(State* initial) : State(eSTATE_S, nullptr, initial) {};
-            bool match(unsigned int event, s_transition* t, void* ctx) override;
+            bool match(unsigned int event, sTransition* t, void* ctx) override;
+            void entry(void* ctx) override;
+            void exit(void* ctx) override;
 
     };
 
@@ -35,14 +37,18 @@ namespace microhsm_tests
     {
         public:
             StateS1(State* parent) : State(eSTATE_S1, parent, nullptr) {};
-            bool match(unsigned int event, s_transition* t, void* ctx) override;
+            bool match(unsigned int event, sTransition* t, void* ctx) override;
+            void entry(void* ctx) override;
+            void exit(void* ctx) override;
     };
 
     class StateS2 : public State
     {
         public:
             StateS2(State* parent) : State(eSTATE_S2, parent, nullptr) {};
-            bool match(unsigned int event, s_transition* t, void* ctx) override;
+            bool match(unsigned int event, sTransition* t, void* ctx) override;
+            void entry(void* ctx) override;
+            void exit(void* ctx) override;
     };
 
     /* HSM Declaration */
@@ -52,7 +58,7 @@ namespace microhsm_tests
 
         TestHSM() : HSM(&state_s) {};
 
-        State* get_state(unsigned int ID) override;
+        State* getState(unsigned int ID) override;
 
         StateS state_s = StateS(&state_s1);
         StateS1 state_s1 = StateS1(&state_s);

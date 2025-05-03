@@ -7,23 +7,23 @@ namespace microhsm
     class HSM;
     class State;
 
-    enum e_transition_kind {
-        eKIND_EXTERNAL,
-        eKIND_LOCAL,
-        eKIND_INTERNAL
+    enum eTransitionKind {
+        eKIND_EXTERNAL,     /// @brief External transition
+        eKIND_LOCAL,        /// @brief Local transition
+        eKIND_INTERNAL      /// @brief Internal (self) transition
     };
 
-    typedef void (*f_transition_effect)(void *ctx);
+    typedef void (*fTransitionEffect)(void *ctx);
 
     /**
      * @struct Representation of transition
      */
     typedef struct {
-        unsigned int source_ID;
-        unsigned int target_ID;
-        e_transition_kind kind;         //< Type of transition
-        f_transition_effect effect;     //< Effect of transition
-    } s_transition;
+        unsigned int sourceID;
+        unsigned int targetID;
+        eTransitionKind kind;         //< Type of transition
+        fTransitionEffect effect;     //< Effect of transition
+    } sTransition;
 
 
     class State
@@ -31,7 +31,7 @@ namespace microhsm
         public:
 
             State(unsigned int ID, State* parent, State* initial);
-            
+
             /**
              * @brief Perform state entry
              * @param ctx Context object
@@ -54,52 +54,85 @@ namespace microhsm
              * @retval `true` Event matched a transition
              * @retval `false` Event did not match any transition
              */
-            virtual bool match(unsigned int event, s_transition* t, void* ctx);
+            virtual bool match(unsigned int event, sTransition* t, void* ctx);
+
+            /**
+             * @brief Check whether state is a composite state
+             * A state with a non-null initial state is considered composite
+             * @return `true` if state is composite
+             */
+            bool isComposite(void);
+
+            /**
+             * @brief Check whether this state is descendent of `state`
+             * @param state State to check against
+             * @retval `true` This state is descendent of `state`
+             * @retval `false` This state is not descendent of `state`
+             */
+            bool isDescendentOf(unsigned int ID);
+
+            /**
+             * @brief Get ancestor with ID
+             * @param ID Unique identifier of ancestor
+             * @return Pointer to ancestor state or nullptr
+             */
+            State* getAncestor(unsigned int ID);
 
             /// @brief Parent state (set to `nullptr` if state is not a substate)
             State* const parent;
             /// @brief Initial state (set to `nullptr` for non-composite states)
             State* const initial;
+            /// @brief Unique identifier of state
+            const unsigned int ID;
+            /// @brief Depth of state
+            const unsigned int depth;
             /// @brief Hierarchical State Machine
             HSM* hsm = nullptr;
-            /// @brief Unique identifier of state
-            const unsigned int ID; // Unique identifier of state
+            /// @brief Pointer to state used for utility
+            State* tmp = nullptr;
 
         protected:
 
             /**
              * @brief No transition matched
              */
-            bool no_transition();
+            bool noTransition();
 
             /**
              * @brief Matched an external transition.
-             * An external transition will result in exit behavior
-             * of the source state to be executed.
+             * An external transition will result in exit/entry behavior
+             * of the source vertex/target state to be executed.
+             * The target and source can be the same vertex.
              * @param target Pointer to target state of transition
              * @param t Pointer to transition object
              * @param effect Effect to execute upon transition
              */
-            bool transition_external(unsigned int target_ID, s_transition* t, f_transition_effect effect);
+            bool transitionExternal(unsigned int target_ID, sTransition* t, fTransitionEffect effect);
 
             /**
              * @brief Matched a local transition
-             * The transition will not exit the containing state.
-             * Local transitions can only exist within a composite state.
+             * A transition which will not exit its containing state.
+             * Local transitions can only exist within composite states.
+             * For local transitions, the target and source vertex cannot be the same.
              * @param target Pointer to target state of transition
              * @param t Pointer to transition object
              * @param effect Effect to execute upon transition
              */
-            bool transition_local(unsigned int target_ID, s_transition* t, f_transition_effect effect);
+            bool transitionLocal(unsigned int target_ID, sTransition* t, fTransitionEffect effect);
 
             /**
              * @brief Matched an internal transition.
              * An internal transition is a type of self-transition that does not
-             * result in any entry/exit being executed
+             * result in any entry/exit behaviors from being executed.
              * @param t Pointer to transition object
              * @param effect Effect to execute upon transition
              */
-            bool transition_internal(s_transition* t, f_transition_effect effect);
+            bool transitionInternal(sTransition* t, fTransitionEffect effect);
+
+        private:
+            
+            static unsigned int computeDepth_(State* s);
+            bool isComposite_ = false;
 
     };
 }
