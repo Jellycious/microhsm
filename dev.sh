@@ -8,8 +8,6 @@ BUILD_CONFIG=Debug
 BUILD_CMD="cmake -S ${ROOT_DIR} -B ${BUILD_DIR} -DCMAKE_BUILD_TYPE=Debug && make -C ${BUILD_DIR}"
 BUILD_CMD_RELEASE="cmake -S ${ROOT_DIR} -B ${BUILD_DIR} -DCMAKE_BUILD_TYPE=Release && make -C ${BUILD_DIR}"
 
-TEST_BINARY=$BUILD_DIR/Debug/bin/microhsm_tests
-
 USAGE_MSG="USAGE: ./dev.sh [OPTIONS]
 
 DESCRIPTION: Utility script that eases development
@@ -30,7 +28,7 @@ build() {
 }
 
 run_test() {
-    $TEST_BINARY/${BUILD_CONFIG}
+    ${BUILD_DIR}/${BUILD_CONFIG}/bin/microhsm_tests
 }
 
 clean() {
