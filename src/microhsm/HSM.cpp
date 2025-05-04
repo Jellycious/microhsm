@@ -117,14 +117,17 @@ namespace microhsm
 
         // 2. Bubble up to source state and exit along the way
         source = exitUntilTarget_(this->curState, source, ctx);
-        if (source == nullptr) return eTRANSITION_ERROR;
-
+#if MICROHSM_ASSERTIONS == 1
+        MICROHSM_ASSERT(source != nullptr);
+#endif
         // 3. Find LCA
         State* lca = this->findLCA_(source, target);
 
         // 4. Bubble up to LCA
         s = exitUntilTarget_(source, lca, ctx);
-        if (s == nullptr) return eTRANSITION_ERROR;
+#if MICROHSM_ASSERTIONS == 1
+        MICROHSM_ASSERT(s != nullptr);
+#endif
 
         // 5. Handle exit of source (local v.s. external)
         if(t->kind == eKIND_EXTERNAL && lca == source) performExit_(lca, ctx);
@@ -137,7 +140,9 @@ namespace microhsm
         
         // 8. Enter until reaching target state
         s = enterUntilTarget_(lca, target, ctx);
-        if (s == nullptr) return eTRANSITION_ERROR;
+#if MICROHSM_ASSERTIONS == 1
+        MICROHSM_ASSERT(s != nullptr);
+#endif
 
         // 9. Enter initial pseudo state(s)
         s = enterInitialStates_(s, ctx);
@@ -161,8 +166,7 @@ namespace microhsm
     {
         State* s = startState;
         while (s != nullptr) {
-            if (s->ID == target->ID) break;
-
+            if (s == target) break;
             performExit_(s, ctx);
             s = s->parent;
         }
@@ -182,7 +186,7 @@ namespace microhsm
         }
         if (s == nullptr) return s;
 
-        // Perform enter effects until target state
+        // Walk path and perform entries
         while (s != target) {
             s = s->tmp;
             performEntry_(s, ctx);

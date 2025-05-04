@@ -76,6 +76,7 @@ fi
 
 if [[ -n $RUNDEV ]]; then
     echo "Running dev server..."
+    run_test
     while inotifywait -r -e close_write $ROOT_DIR/tests $ROOT_DIR/src $ROOT_DIR/include; do
         echo "Building Project"
         build

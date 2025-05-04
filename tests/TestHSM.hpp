@@ -43,7 +43,6 @@ namespace microhsm_tests
             void exit(void* ctx) override;
             void init(void* ctx) override;
 
-            void resetCounts();
             unsigned int getEntryCount();
             unsigned int getExitCount();
 

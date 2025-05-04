@@ -23,12 +23,6 @@ namespace microhsm_tests
         return eSTATE_COUNT;
     }
 
-    void TestState::resetCounts()
-    {
-        this->entryCount_ = 0;
-        this->exitCount_ = 0;
-    }
-
     unsigned int TestState::getEntryCount()
     {
         return entryCount_;

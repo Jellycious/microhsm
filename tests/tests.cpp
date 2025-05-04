@@ -54,6 +54,11 @@ namespace microhsm_tests
         TEST_ASSERT_EQUAL(0, testHSM.state_s2.getEntryCount());
         TEST_ASSERT_EQUAL(0, testHSM.state_s21.getEntryCount());
         TEST_ASSERT_EQUAL(0, testHSM.state_s22.getEntryCount());
+        TEST_ASSERT_EQUAL(0, testHSM.state_s.getExitCount());
+        TEST_ASSERT_EQUAL(1, testHSM.state_s1.getExitCount());
+        TEST_ASSERT_EQUAL(0, testHSM.state_s2.getExitCount());
+        TEST_ASSERT_EQUAL(0, testHSM.state_s21.getExitCount());
+        TEST_ASSERT_EQUAL(0, testHSM.state_s22.getExitCount());
         TEST_ASSERT_FALSE(testCTX.getFlag());
     }
 
