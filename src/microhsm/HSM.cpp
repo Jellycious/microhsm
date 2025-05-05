@@ -1,7 +1,4 @@
-#include <cstdio>
-#include <microhsm/microhsm_config.hpp>
-#include <microhsm/State.hpp>
-#include <microhsm/HSM.hpp>
+#include <microhsm/microhsm.hpp>
 
 namespace microhsm
 {
@@ -52,22 +49,22 @@ namespace microhsm
         return match;
     }
 
-    eStatus HSM::dispatch(unsigned int signal, void* ctx)
+    eStatus HSM::dispatch(unsigned int event, void* ctx)
     {
         sTransition t;
         eStatus status = eTRANSITION_ERROR;
 
         // Match event to state
-        bool match = this->matchStateOrAncestor_(signal, &t, ctx);
+        bool match = this->matchStateOrAncestor_(event, &t, ctx);
         if (!match) {
 #ifdef MICROHSM_TRACING
-            MICROHSM_TRACE_DISPATCH_IGNORED(signal);
+            MICROHSM_TRACE_DISPATCH_IGNORED(event);
 #endif
             return eEVENT_IGNORED;
         }
 
 #ifdef MICROHSM_TRACING
-            MICROHSM_TRACE_DISPATCH_MATCHED(signal, t.sourceID);
+            MICROHSM_TRACE_DISPATCH_MATCHED(event, t.sourceID);
 #endif
 
         // Perform transition
@@ -125,9 +122,6 @@ namespace microhsm
 
         // 4. Bubble up to LCA
         s = exitUntilTarget_(source, lca, ctx);
-#if MICROHSM_ASSERTIONS == 1
-        MICROHSM_ASSERT(s != nullptr);
-#endif
 
         // 5. Handle exit of source (local v.s. external)
         if(t->kind == eKIND_EXTERNAL && lca == source) performExit_(lca, ctx);
@@ -175,22 +169,24 @@ namespace microhsm
 
     State* HSM::enterUntilTarget_(State* start, State* target, void* ctx)
     {
+        // Edge case
+        if (start == target) return target;
+
         State* s = target;
 
         // Create path from start to target
-        while (s != start && s != nullptr) {
-            if (s->parent != nullptr) {
-                s->parent->tmp = s;
-            }
+        while (s->parent != start) {
+            s->parent->tmp = s;
             s = s->parent;
         }
-        if (s == nullptr) return s;
 
         // Walk path and perform entries
-        while (s != target) {
-            s = s->tmp;
+        while(s != target) {
             performEntry_(s, ctx);
+            s = s->tmp;
         }
+        performEntry_(s, ctx);
+
         return s;
     }
 

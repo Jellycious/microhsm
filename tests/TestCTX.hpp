@@ -1,3 +1,6 @@
+#ifndef _H_MICROHSM_TESTS_TESTCTX
+#define _H_MICROHSM_TESTS_TESTCTX
+
 namespace microhsm_tests
 {
     class TestCTX
@@ -17,3 +20,5 @@ namespace microhsm_tests
             bool flag_ = false;
     };
 }
+
+#endif

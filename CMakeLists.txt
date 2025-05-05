@@ -16,6 +16,13 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     message(FATAL_ERROR "In-source builds are not allowed. Please create a build directory and run cmake from there.")
 endif()
 
+add_compile_options(
+    -Wall
+    -Wextra
+    -Wconversion
+    -Wshadow
+    -Wsign-conversion
+)
 
 add_subdirectory(src/microhsm)
 

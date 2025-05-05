@@ -30,19 +30,19 @@ namespace microhsm
     {
         public:
 
-            State(unsigned int ID, State* parent, State* initial);
+            State(unsigned int id, State* parent, State* initial);
 
             /**
              * @brief Perform state entry
              * @param ctx Context object
              */
-            virtual void entry(void* ctx) {};
+            virtual void entry(void* ctx) {(void)ctx;};
 
             /**
              * @brief Perform state exit
              * @param ctx Context object
              */
-            virtual void exit(void* ctx) {};
+            virtual void exit(void* ctx) {(void)ctx;};
 
             /**
              * @brief Match event to transition
@@ -60,7 +60,7 @@ namespace microhsm
              * @brief Optional initialization function
              * @param ctx Context object
              */
-            virtual void init(void* ctx) {};
+            virtual void init(void* ctx) {(void)ctx;};
 
             /**
              * @brief Check whether state is a composite state

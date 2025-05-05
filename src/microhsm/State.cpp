@@ -1,5 +1,6 @@
-#include <microhsm/microhsm_config.hpp>
-#include <microhsm/State.hpp>
+#include <microhsm/microhsm.hpp>
+
+#define UNUSED_ARG_(x) (void)x;
 
 namespace microhsm
 {
@@ -19,10 +20,10 @@ namespace microhsm
         return depth;
     }
 
-    State::State(unsigned int ID, State* parent, State* initial) :
-        parent(parent),
-        initial(initial),
-        ID(ID),
+    State::State(unsigned int id, State* parentState, State* initialState) :
+        parent(parentState),
+        initial(initialState),
+        ID(id),
         depth(State::computeDepth_(this))
     {
         // Make sure parent is registered as a composite state.
@@ -42,22 +43,22 @@ namespace microhsm
         return isComposite_;
     }
 
-    bool State::isDescendentOf(unsigned int ID)
+    bool State::isDescendentOf(unsigned int id)
     {
         bool descendent = false;
         State* s = this;
         while (!descendent && s != nullptr) {
-            descendent = (s->ID == ID);
+            descendent = (s->ID == id);
             s = s->parent;
         }
         return descendent;
     }
 
-    State* State::getAncestor(unsigned int ID)
+    State* State::getAncestor(unsigned int id)
     {
         State* s = this->parent;
         while (s != nullptr) {
-            if (s->ID == ID) break;
+            if (s->ID == id) break;
 
             s = s->parent;
         }
@@ -101,8 +102,11 @@ namespace microhsm
 
     bool State::match(unsigned int event, sTransition* t, void *ctx)
     {
+        UNUSED_ARG_(ctx);
+        UNUSED_ARG_(event);
+        UNUSED_ARG_(t);
         // By default: no match
-        return false;
+        return noTransition();
     }
 
 }

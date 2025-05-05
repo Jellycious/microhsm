@@ -19,9 +19,13 @@ namespace microhsm
     {
         public:
 
-            explicit HSM(State* initState) :
-                curState(initState),
-                initState(initState) {};
+            /**
+             * @brief HSM constructor
+             * @param initState Initial state of HSM
+             */
+            explicit HSM(State* initial) :
+                curState(initial),
+                initState(initial) {};
 
             /**
              * @brief Get state
@@ -39,13 +43,13 @@ namespace microhsm
 
             /**
              * @brief Dispatch event to HSM
-             * @param signal Event to dispatch
+             * @param event Event to dispatch
              * @param ctx Pointer to context object
              * @retval eOK Event matched a transition
              * @retval eDISPATCH_EVENT_IGNORED Event didn't match a transition
              * @retval eTRANSITION_ERROR Error occurred during dispatch
              */
-            eStatus dispatch(unsigned int signal, void* ctx);
+            eStatus dispatch(unsigned int event, void* ctx);
 
             /**
              * @brief Initialize HSM
@@ -63,16 +67,16 @@ namespace microhsm
             /**
              * @brief Check whether HSM is in state
              * @param ID ID of state
-             * @return Whether the cur_state or one of its parents is `ID`
+             * @return Whether the cur_state or one of its parents has `ID`
              */
             bool inState(unsigned int ID);
 
         protected:
 
-            /// @brief Initial state (`nullptr` for leaf states)
-            State* initState;
             /// @brief Current active state (always a leaf state)
             State* curState;
+            /// @brief Initial state (`nullptr` for leaf states)
+            State* initState;
 
         private:
 
@@ -86,10 +90,10 @@ namespace microhsm
             static State* exitUntilTarget_(State* start, State* target, void* ctx);
 
             /**
-             * @brief Perform enter effects up to and including target state
-             * @note Does not perform enter effect of startState
-             * @param startState Pointer to state to start from
-             * @param targetState Final state to enter
+             * @brief Perform entry effects until `target` (including)
+             * @note Does not perform entry behavior of `startState`
+             * @param startState State to start from (can be `nullptr`)
+             * @param targetState Final state to enter (cannot be `nullptr`)
              * @param Context object
              * @return `targetState` if successfull, `nullptr` otherwise. 
              */

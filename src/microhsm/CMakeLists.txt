@@ -8,5 +8,5 @@ target_sources(microhsm
 
 target_include_directories(microhsm
     PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}/../../include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../include
 )

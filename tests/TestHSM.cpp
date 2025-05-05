@@ -10,6 +10,8 @@
 #include <TestHSM.hpp>
 #include <TestCTX.hpp>
 
+#define UNUSED_ARG(x) (void)x;
+
 namespace microhsm_tests
 {
 
@@ -34,22 +36,26 @@ namespace microhsm_tests
 
     void TestState::entry(void* ctx)
     {
+        UNUSED_ARG(ctx);
         entryCount_++;
     }
 
     void TestState::exit(void* ctx)
     {
+        UNUSED_ARG(ctx);
         exitCount_++;
     }
 
     void TestState::init(void* ctx)
     {
+        UNUSED_ARG(ctx);
         this->entryCount_ = 0;
         this->exitCount_ = 0;
     }
 
     bool StateS::match(unsigned int event, sTransition* t, void* ctx)
     {
+        UNUSED_ARG(ctx);
         switch(event) {
             case eEVENT_B:
                 return transitionLocal(eSTATE_S2, t, TestCTX::setFlag);
@@ -57,6 +63,8 @@ namespace microhsm_tests
                 return transitionExternal(eSTATE_S22, t, TestCTX::setFlag);
             case eEVENT_F:
                 return transitionInternal(t, TestCTX::setFlag);
+            case eEVENT_G:
+                return transitionExternal(eSTATE_U, t, nullptr);
             default:
                 break;
         }
@@ -65,6 +73,7 @@ namespace microhsm_tests
 
     bool StateS1::match(unsigned int event, sTransition* t, void* ctx)
     {
+        UNUSED_ARG(ctx);
         switch(event) {
             case eEVENT_A:
                 return transitionExternal(eSTATE_S1, t, nullptr);
@@ -82,6 +91,7 @@ namespace microhsm_tests
 
     bool StateS2::match(unsigned int event, sTransition* t, void* ctx)
     {
+        UNUSED_ARG(ctx);
         switch(event) {
             case eEVENT_C:
                 return transitionExternal(eSTATE_S1, t, TestCTX::clearFlag);
@@ -93,6 +103,7 @@ namespace microhsm_tests
 
     bool StateS21::match(unsigned int event, sTransition* t, void* ctx)
     {
+        UNUSED_ARG(ctx);
         switch(event) {
             case eEVENT_B:
                 return transitionExternal(eSTATE_S, t, TestCTX::clearFlag);
@@ -104,9 +115,22 @@ namespace microhsm_tests
 
     bool StateS22::match(unsigned int event, sTransition* t, void* ctx)
     {
+        UNUSED_ARG(ctx);
         switch(event) {
             case eEVENT_F:
                 return transitionExternal(eSTATE_S21, t, nullptr);
+            default:
+                break;
+        }
+        return noTransition();
+    }
+
+    bool StateU::match(unsigned int event, sTransition* t, void* ctx)
+    {
+        UNUSED_ARG(ctx);
+        switch(event) {
+            case eEVENT_G:
+                return transitionExternal(eSTATE_S22, t, TestCTX::setFlag);
             default:
                 break;
         }
