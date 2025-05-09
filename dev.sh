@@ -51,8 +51,8 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -c|--clean)
-            CLEANFIRST=1
-            shift
+            clean
+            exit 0
             ;;
         *)
             echo "Incorrect parameter: $1"
@@ -65,13 +65,11 @@ done
 # Always build target
 build
 
-if [[ -n $CLEANFIRST ]]; then
-    clean
-fi
-
 if [[ -n $RUNTEST ]]; then
     build
-    run_test
+    if [[ $? -eq 0 ]]; then
+        run_test
+    fi
 fi
 
 if [[ -n $RUNDEV ]]; then

@@ -7,8 +7,8 @@
 
 #include <microhsm/HSM.hpp>
 
-#include <TestHSM.hpp>
-#include <TestCTX.hpp>
+#include <test_objects/TestCTX.hpp>
+#include <basic_tests/TestHSM.hpp>
 
 #define UNUSED_ARG(x) (void)x;
 
@@ -95,6 +95,8 @@ namespace microhsm_tests
         switch(event) {
             case eEVENT_C:
                 return transitionExternal(eSTATE_S1, t, TestCTX::clearFlag);
+            case eEVENT_E:
+                return transitionExternal(eSTATE_U, t, TestCTX::clearFlag);
             default:
                 break;
         }
@@ -131,6 +133,8 @@ namespace microhsm_tests
         switch(event) {
             case eEVENT_G:
                 return transitionExternal(eSTATE_S22, t, TestCTX::setFlag);
+            case eEVENT_E:
+                return transitionExternal(eSTATE_S, t, nullptr);
             default:
                 break;
         }

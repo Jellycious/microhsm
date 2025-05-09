@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" name="TestHSM" qt:editorversion="16.0.0">
+    <state id="S">
+        <qt:editorinfo geometry="318;211.32;-75.30;0;1272.54;554.56" scenegeometry="318;211.32;242.70;211.32;1272.54;554.56"/>
+        <state id="S1">
+            <qt:editorinfo geometry="264.53;270.59;-106.71;-58.21;309.05;258.91" scenegeometry="582.53;481.91;475.82;423.70;309.05;258.91"/>
+            <transition type="external" event="eEVENT_C" target="S2">
+                <qt:editorinfo startTargetFactors="93.02;27.78" endTargetFactors="6.56;25.45"/>
+                <script src="TestCTX::setFlag"/>
+            </transition>
+            <onentry>
+                <script/>
+            </onentry>
+            <onexit>
+                <script>exitCount++;</script>
+            </onexit>
+            <transition type="external" event="eEVENT_D" target="S">
+                <qt:editorinfo movePoint="-17.44;1.03" endTargetFactors="43.09;14.22"/>
+            </transition>
+            <transition type="external" event="eEVENT_A"/>
+            <transition type="external" event="eEVENT_F" target="S22">
+                <qt:editorinfo localGeometry="457.82;0" startTargetFactors="96.84;90.72" endTargetFactors="10.02;87.05"/>
+            </transition>
+        </state>
+        <state id="S2">
+            <qt:editorinfo geometry="795.91;277.77;-60;-58.21;384.20;260.04" scenegeometry="1113.91;489.09;1053.91;430.88;384.20;260.04"/>
+            <transition type="external" event="eEVENT_C" target="S1">
+                <qt:editorinfo startTargetFactors="6.45;67.14" endTargetFactors="93.50;65.61"/>
+                <script src="TestCTX::clearFlag"/>
+            </transition>
+            <onentry>
+                <script/>
+            </onentry>
+            <onexit>
+                <script/>
+            </onexit>
+            <state id="S21">
+                <qt:editorinfo geometry="65.65;57.04;-60;-50;120;157.87" scenegeometry="1179.56;546.13;1119.56;496.13;120;157.87"/>
+                <onentry>
+                    <script/>
+                </onentry>
+                <onexit>
+                    <script/>
+                </onexit>
+                <transition type="external" event="eEVENT_B" target="S">
+                    <qt:editorinfo endTargetFactors="73.46;3.01"/>
+                </transition>
+            </state>
+            <state id="S22">
+                <qt:editorinfo geometry="251.34;58.06;-60;-50;120;157.87" scenegeometry="1365.25;547.15;1305.25;497.15;120;157.87"/>
+                <onentry>
+                    <script/>
+                </onentry>
+                <onexit>
+                    <script/>
+                </onexit>
+                <transition type="external" event="eEVENT_F" target="S21">
+                    <qt:editorinfo endTargetFactors="89.98;48.69"/>
+                </transition>
+            </state>
+            <transition type="external" event="eEVENT_E" target="U">
+                <qt:editorinfo localGeometry="0.03;55.86;-1031.17;55.86" startTargetFactors="5.45;95.10" endTargetFactors="88.82;89.95"/>
+            </transition>
+        </state>
+        <onentry>
+            <script/>
+        </onentry>
+        <onexit>
+            <script/>
+        </onexit>
+        <transition type="external" event="eEVENT_B" target="S2">
+            <qt:editorinfo startTargetFactors="59.26;2.55" endTargetFactors="10.90;8.93"/>
+            <script src="TestCTX::setFlag"/>
+            <qt:metadata kind="local"/>
+        </transition>
+        <transition type="internal" event="eEVENT_F"/>
+        <transition type="external" event="eEVENT_G" target="U">
+            <qt:editorinfo endTargetFactors="88.15;40.58"/>
+        </transition>
+        <transition type="external" event="aEVENT_E" target="S22">
+            <qt:editorinfo localGeometry="0;-39.07;241.35;-39.07" movePoint="-25.65;-5.13" startTargetFactors="68.11;2.53" movePointCond="213.36;-2.27" endTargetFactors="37.94;8.58"/>
+            <script src="TestCTX::setFlag"/>
+        </transition>
+    </state>
+    <state id="U">
+        <qt:editorinfo geometry="-2.91;361.27;-60;-50;120;157.87" scenegeometry="-2.91;361.27;-62.91;311.27;120;157.87"/>
+        <onexit>
+            <script/>
+        </onexit>
+        <onentry>
+            <script/>
+        </onentry>
+        <transition type="external" event="eEVENT_G" target="S22">
+            <qt:editorinfo localGeometry="-9.98;419.51;1331.23;419.51" endTargetFactors="19.92;88.86"/>
+            <script src="TestCTX::setFlag"/>
+        </transition>
+        <transition type="external" event="eEVENT_E" target="S">
+            <qt:editorinfo movePoint="-1.19;36.82" endTargetFactors="1.05;48.47"/>
+        </transition>
+    </state>
+</scxml>

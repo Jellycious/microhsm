@@ -5,8 +5,8 @@
 
 #include <microhsm/HSM.hpp>
 
-#include <MacroHSM.hpp>
-#include <TestCTX.hpp>
+#include <macro_tests/MacroHSM.hpp>
+#include <test_objects/TestCTX.hpp>
 
 #define UNUSED_ARG_(x) (void)x;
 
@@ -47,6 +47,11 @@ namespace microhsm_tests
         return this->entryCount_;
     }
 
+    HSM_DEFINE_STATE_FUNCTION(MBaseState, unsigned int, getExitCount)
+    {
+        return this->exitCount_;
+    }
+
     HSM_DEFINE_STATE_MATCH(MStateS)
     {
         UNUSED_ARG_(ctx);
@@ -81,6 +86,7 @@ namespace microhsm_tests
                 break;
         }
         return noTransition();
+
     }
 
     HSM_DEFINE_STATE_MATCH(MStateS2)
@@ -101,6 +107,8 @@ namespace microhsm_tests
         switch(event) {
             case eMEVENT_B:
                 return transitionExternal(eMSTATE_S, t, TestCTX::clearFlag);
+            case eMEVENT_E:
+                return transitionExternal(eMSTATE_U, t, TestCTX::clearFlag);
             default:
                 break;
         }
@@ -125,9 +133,12 @@ namespace microhsm_tests
         switch(event) {
             case eMEVENT_G:
                 return transitionExternal(eMSTATE_S22, t, TestCTX::setFlag);
+            case eMEVENT_E:
+                return transitionExternal(eMSTATE_S, t, nullptr);
             default:
                 break;
         }
         return noTransition();
     }
 };
+

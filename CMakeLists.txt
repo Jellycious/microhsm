@@ -24,6 +24,13 @@ add_compile_options(
     -Wsign-conversion
 )
 
+if(BUILD_TESTING)
+    add_compile_options(
+        -DMICROHSM_CUSTOM_CONFIG # Include custom configuration file
+        -I${CMAKE_CURRENT_SOURCE_DIR}/tests/
+    )
+endif()
+
 add_subdirectory(src/microhsm)
 
 if(BUILD_TESTING)
