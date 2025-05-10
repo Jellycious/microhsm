@@ -18,7 +18,7 @@ namespace microhsm_tests
         return this->states[ID];
     }
 
-    unsigned int MacroHSM::getStateCount()
+    unsigned int MacroHSM::getMaxStateID()
     {
         return e_mstates_COUNT;
     }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" name="HistoryHSM" qt:editorversion="16.0.0">
+    <state id="H">
+        <qt:editorinfo scenegeometry="362.79;218.29;348.13;114.81;732;531.83" geometry="362.79;218.29;-14.66;-103.48;732;531.83"/>
+        <state id="H2">
+            <qt:editorinfo scenegeometry="856.74;305.40;685.08;259.79;377.83;193.87" geometry="493.95;87.11;-171.66;-45.61;377.83;193.87"/>
+            <state id="H21">
+                <qt:editorinfo scenegeometry="759;364.72;699;314.72;120;100" geometry="-97.74;59.32;-60;-50;120;100"/>
+                <transition type="external" event="eEVENT_A" target="H22">
+                    <qt:editorinfo endTargetFactors="6.42;38.43" startTargetFactors="89.55;40.65"/>
+                </transition>
+            </state>
+            <state id="H22">
+                <qt:editorinfo scenegeometry="992.67;367.50;932.67;317.50;120;100" geometry="135.93;62.10;-60;-50;120;100"/>
+                <transition type="external" event="eEVENT_A" target="I">
+                    <qt:editorinfo endTargetFactors="49.19;89.50" localGeometry="-0.01;118.28;-774.28;118.28"/>
+                </transition>
+            </state>
+        </state>
+        <state id="H1">
+            <qt:editorinfo scenegeometry="520.62;325.89;460.62;275.89;120;100" geometry="157.83;107.60;-60;-50;120;100"/>
+            <transition type="external" event="eEVENT_A" target="H2">
+                <qt:editorinfo endTargetFactors="2.24;37.90" startTargetFactors="89.69;62.98"/>
+            </transition>
+        </state>
+        <history type="shallow" id="History_1">
+            <qt:editorinfo scenegeometry="411.98;224.44;391.98;204.44;40;40" geometry="49.19;6.15;-20;-20;40;40"/>
+        </history>
+        <history type="deep" id="History_2">
+            <qt:editorinfo scenegeometry="414.03;298.23;394.03;278.23;40;40" geometry="51.24;79.94;-20;-20;40;40"/>
+        </history>
+    </state>
+    <state id="I">
+        <qt:editorinfo scenegeometry="247.66;166.27;133.79;116.27;173.87;294.04" geometry="247.66;166.27;-113.87;-50;173.87;294.04"/>
+        <transition type="external" event="eEVENT_A" target="History_1"/>
+        <transition type="external" event="eEVENT_B" target="History_2"/>
+    </state>
+</scxml>

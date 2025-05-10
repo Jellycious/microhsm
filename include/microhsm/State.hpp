@@ -19,12 +19,11 @@ namespace microhsm
      * @struct Representation of transition
      */
     typedef struct {
-        unsigned int sourceID;
-        unsigned int targetID;
-        eTransitionKind kind;         //< Type of transition
-        fTransitionEffect effect;     //< Effect of transition
+        unsigned int sourceID;      //< Source of transition (State)
+        unsigned int targetID;      //< Target of transition (State/Pseudostate) 
+        eTransitionKind kind;       //< Type of transition
+        fTransitionEffect effect;   //< Effect of transition
     } sTransition;
-
 
     class State
     {
@@ -57,10 +56,10 @@ namespace microhsm
             virtual bool match(unsigned int event, sTransition* t, void* ctx);
 
             /**
-             * @brief Optional initialization function
+             * @brief Initialization
              * @param ctx Context object
              */
-            virtual void init(void* ctx) {(void)ctx;};
+            void init(void* ctx);
 
             /**
              * @brief Check whether state is a composite state
@@ -92,15 +91,25 @@ namespace microhsm
             const unsigned int ID;
             /// @brief Depth of state
             const unsigned int depth;
+
             /// @brief Hierarchical State Machine
             HSM* hsm = nullptr;
-            /// @brief Pointer to state used for utility
+            /// @brief Pointer to state used for internal purposes
             State* tmp = nullptr;
 
         protected:
 
             /**
+             * @brief Initialization callback
+             * Called after state initialization. Provides user 
+             * with hook to perform actions after initialization.
+             * @param ctx Context object
+             */
+            virtual void init_(void* ctx) {(void)ctx;}
+
+            /**
              * @brief No transition matched
+             * @return `false`
              */
             bool noTransition();
 
@@ -112,6 +121,7 @@ namespace microhsm
              * @param target Pointer to target state of transition
              * @param t Pointer to transition object
              * @param effect Effect to execute upon transition
+             * @return `true`
              */
             bool transitionExternal(unsigned int target_ID, sTransition* t, fTransitionEffect effect);
 
@@ -123,6 +133,7 @@ namespace microhsm
              * @param target Pointer to target state of transition
              * @param t Pointer to transition object
              * @param effect Effect to execute upon transition
+             * @return `true`
              */
             bool transitionLocal(unsigned int target_ID, sTransition* t, fTransitionEffect effect);
 
@@ -132,12 +143,19 @@ namespace microhsm
              * result in any entry/exit behaviors from being executed.
              * @param t Pointer to transition object
              * @param effect Effect to execute upon transition
+             * @return `true`
              */
             bool transitionInternal(sTransition* t, fTransitionEffect effect);
 
         private:
             
+            /**
+             * @brief Compute depth of state
+             * @return Depth of state
+             */
             static unsigned int computeDepth_(State* s);
+
+            /// @brief Whether state is a composite state
             bool isComposite_ = false;
 
     };

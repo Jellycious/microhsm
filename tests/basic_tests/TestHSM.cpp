@@ -20,7 +20,7 @@ namespace microhsm_tests
         return this->states[ID];
     }
 
-    unsigned int TestHSM::getStateCount()
+    unsigned int TestHSM::getMaxStateID()
     {
         return eSTATE_COUNT;
     }
@@ -46,7 +46,7 @@ namespace microhsm_tests
         exitCount_++;
     }
 
-    void TestState::init(void* ctx)
+    void TestState::init_(void* ctx)
     {
         UNUSED_ARG(ctx);
         this->entryCount_ = 0;

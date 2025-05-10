@@ -45,10 +45,13 @@ namespace microhsm_tests
 
             void entry(void* ctx) override;
             void exit(void* ctx) override;
-            void init(void* ctx) override;
 
             unsigned int getEntryCount();
             unsigned int getExitCount();
+
+        protected:
+
+            void init_(void* ctx) override;
 
         private:
             unsigned int entryCount_ = 0;
@@ -107,7 +110,7 @@ namespace microhsm_tests
         TestHSM() : HSM(&state_s) {};
 
         State* getState(unsigned int ID) override;
-        unsigned int getStateCount() override;
+        unsigned int getMaxStateID() override;
 
         StateS state_s = StateS(&state_s1);
         StateS1 state_s1 = StateS1(&state_s);

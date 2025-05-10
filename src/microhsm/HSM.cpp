@@ -5,8 +5,12 @@ namespace microhsm
 
     void HSM::init(void* ctx)
     {
-        for (unsigned int id = 0; id < this->getStateCount(); id++) {
-            this->getState(id)->init(ctx);
+        // Initialize all states
+        for (unsigned int id = 0; id < this->getMaxStateID(); id++) {
+            State* s = this->getState(id);
+            if (s != nullptr) {
+                this->getState(id)->init(ctx);
+            }
         }
 
         // Perform entry on initial state
@@ -57,13 +61,13 @@ namespace microhsm
         // Match event to state
         bool match = this->matchStateOrAncestor_(event, &t, ctx);
         if (!match) {
-#ifdef MICROHSM_TRACING
+#if MICROHSM_TRACING == 1
             MICROHSM_TRACE_DISPATCH_IGNORED(event);
 #endif
             return eEVENT_IGNORED;
         }
 
-#ifdef MICROHSM_TRACING
+#if MICROHSM_TRACING == 1
             MICROHSM_TRACE_DISPATCH_MATCHED(event, t.sourceID);
 #endif
 

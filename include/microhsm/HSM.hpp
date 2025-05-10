@@ -30,16 +30,18 @@ namespace microhsm
             /**
              * @brief Get state
              * @param ID Unique Identifier of state
-             * @return State associated to ID
+             * @retval `State*` associated to provided ID
+             * @retval `nullptr` If state doesn't exist
              */
             virtual State* getState(unsigned int ID) = 0;
 
             /**
-             * @brief Get number of states
-             * @note It is assumed for the IDs 0-`getNumberOfStates()` are all valid IDs
+             * @brief Return state ID with highest value
+             * This is used by `HSM` to iterate over all states together
+             * with help of the `getState(ID)` function.
              * @return Number of states 
              */
-            virtual unsigned int getStateCount(void) = 0;
+            virtual unsigned int getMaxStateID(void) = 0;
 
             /**
              * @brief Dispatch event to HSM
@@ -72,6 +74,15 @@ namespace microhsm
             bool inState(unsigned int ID);
 
         protected:
+
+            /**
+             * @brief Initialization callback
+             * Called after initialization of HSM.
+             * Provides user with hook for addi
+             * behavior provided by user
+             * @param ctx Context object
+             */
+            virtual void init_(void* ctx) {(void)ctx;};
 
             /// @brief Current active state (always a leaf state)
             State* curState;

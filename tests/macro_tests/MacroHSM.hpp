@@ -61,7 +61,7 @@ namespace microhsm_tests
         MacroHSM() : HSM(&state_s) {};
 
         State* getState(unsigned int ID) override;
-        unsigned int getStateCount() override;
+        unsigned int getMaxStateID() override;
 
         MStateS state_s         = MStateS(eMSTATE_S, nullptr, &state_s1);
         MStateS1 state_s1       = MStateS1(eMSTATE_S1, &state_s, nullptr);

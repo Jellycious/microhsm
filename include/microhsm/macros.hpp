@@ -44,7 +44,7 @@
 
 /// @brief Declare state initialization function
 #define HSM_DECLARE_STATE_INIT()                                    \
-            void init(void* ctx) override;
+            void init_(void* ctx) override;
 
 /// @brief Declare arbitrary state member variable or function
 #define HSM_DECLARE_MEMBER(member)                                  \
@@ -105,7 +105,7 @@
 
 /// @brief Define state init function
 #define HSM_DEFINE_STATE_INIT(class_name)                                       \
-            void class_name::init(void* ctx)
+            void class_name::init_(void* ctx)
 
 /**
  * @brief Define state match function

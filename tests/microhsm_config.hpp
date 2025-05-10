@@ -28,23 +28,23 @@ inline const char* get_event_name_(unsigned int event)
 {
     switch(event) {
         case 0:
-            return "E0"; 
+            return "eANONYMOUS"; 
         case 1:
-            return "EA"; 
+            return "eA"; 
         case 2:
-            return "EB"; 
+            return "eB"; 
         case 3:
-            return "EC"; 
+            return "eC"; 
         case 4:
-            return "ED"; 
+            return "eD"; 
         case 5:
-            return "EE"; 
+            return "eE"; 
         case 6:
-            return "EF"; 
+            return "eF"; 
         case 7:
-            return "EG"; 
+            return "eG"; 
         default:
-            return "UNKOWN";
+            return "eUNKOWN";
     }
 
 }

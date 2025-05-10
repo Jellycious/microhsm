@@ -32,6 +32,11 @@ namespace microhsm
         }
     }
 
+    void State::init(void* ctx)
+    {
+        this->init_(ctx);
+    }
+
     bool State::noTransition()
     {
         return false;
