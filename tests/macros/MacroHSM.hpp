@@ -23,7 +23,7 @@ namespace microhsm_tests
             eMEVENT_G,
     )
 
-    HSM_CREATE_STATE_LIST(e_mstates,
+    HSM_CREATE_ID_LIST(e_mstates,
             eMSTATE_S,
             eMSTATE_S1,
             eMSTATE_S2,
@@ -60,8 +60,8 @@ namespace microhsm_tests
 
         MacroHSM() : HSM(&state_s) {};
 
-        State* getState(unsigned int ID) override;
-        unsigned int getMaxStateID() override;
+        Vertex* getVertex(unsigned int ID) override;
+        unsigned int getMaxID() override;
 
         MStateS state_s         = MStateS(eMSTATE_S, nullptr, &state_s1);
         MStateS1 state_s1       = MStateS1(eMSTATE_S1, &state_s, nullptr);

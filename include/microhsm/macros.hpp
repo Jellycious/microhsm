@@ -1,8 +1,7 @@
 #ifndef _H_MICROHSM_MACROS
 #define _H_MICROHSM_MACROS
 
-#include <microhsm/State.hpp>
-#include <microhsm/HSM.hpp>
+#include <microhsm/microhsm.hpp>
 
 #define HSM_EXPAND_(x) x
 
@@ -18,16 +17,18 @@
     };
 
 /**
- * @brief Create state list
- * Will create an enumerator with the provide states
- * The first state will be assigned '0'
+ * @brief Create id list
+ * Will create an enumerator with the provide ids
+ * The first id will be assigned '0'
  * At the end an identifier '`enum_name`_COUNT' will be placed
- * this identifiers represents the total number of states.
+ * this identifier represents the total number of states.
+ * IDs are generally used to unique identify a vertex inside
+ * of the HSM.
  * @param enum_name Enum type identifier
- * @param first_name First state identifier
- * @param ... Other state identifiers
+ * @param first_name First id identifier
+ * @param ... Other id identifiers
  */
-#define HSM_CREATE_STATE_LIST(enum_name, first_state, ...)          \
+#define HSM_CREATE_ID_LIST(enum_name, first_state, ...)          \
     enum enum_name: unsigned int {                                  \
         first_state = 0,                                            \
         ##__VA_ARGS__,                                              \

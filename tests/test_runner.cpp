@@ -1,7 +1,6 @@
-#include "basic_tests/basic_tests.hpp"
-
-#include "macro_tests/macro_tests.hpp"
-#include "microhsm/HSM.hpp"
+#include "basic/basic_tests.hpp"
+#include "macros/macro_tests.hpp"
+#include "history/history_tests.hpp"
 #include <unity.h>
 
 #include <iostream>
@@ -21,6 +20,7 @@ namespace microhsm_tests
         UNITY_BEGIN();
         run_basic_tests();
         run_macro_tests();
+        run_history_tests();
         return UNITY_END();
     }
 

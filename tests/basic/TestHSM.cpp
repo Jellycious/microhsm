@@ -5,22 +5,23 @@
  *      Practical Statecharts in C/C++ by Miro Samek, Ph.D
  */
 
-#include <microhsm/HSM.hpp>
+#include "microhsm/objects/State.hpp"
+#include <microhsm/microhsm.hpp>
 
-#include <test_objects/TestCTX.hpp>
-#include <basic_tests/TestHSM.hpp>
+#include <context/TestCTX.hpp>
+#include <basic/TestHSM.hpp>
 
 #define UNUSED_ARG(x) (void)x;
 
 namespace microhsm_tests
 {
 
-    State* TestHSM::getState(unsigned int ID)
+    Vertex* TestHSM::getVertex(unsigned int ID)
     {
-        return this->states[ID];
+        return this->vertices[ID];
     }
 
-    unsigned int TestHSM::getMaxStateID()
+    unsigned int TestHSM::getMaxID()
     {
         return eSTATE_COUNT;
     }
@@ -131,9 +132,35 @@ namespace microhsm_tests
     {
         UNUSED_ARG(ctx);
         switch(event) {
+            case eEVENT_A:
+                return transitionExternal(eSTATE_V, t, nullptr);
             case eEVENT_G:
                 return transitionExternal(eSTATE_S22, t, TestCTX::setFlag);
             case eEVENT_E:
+                return transitionExternal(eSTATE_S, t, nullptr);
+            default:
+                break;
+        }
+        return noTransition();
+    }
+
+    bool StateV::match(unsigned int event, sTransition* t, void* ctx)
+    {
+        UNUSED_ARG(ctx);
+        switch(event) {
+            case eEVENT_ANONYMOUS:
+                return transitionExternal(eSTATE_X, t, nullptr);
+            default:
+                break;
+        }
+        return noTransition();
+    }
+
+    bool StateX::match(unsigned int event, sTransition* t, void* ctx)
+    {
+        UNUSED_ARG(ctx);
+        switch(event) {
+            case eEVENT_ANONYMOUS:
                 return transitionExternal(eSTATE_S, t, nullptr);
             default:
                 break;

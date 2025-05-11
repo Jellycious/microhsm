@@ -1,40 +1,63 @@
 #include <microhsm/microhsm.hpp>
 
+#include <microhsm/objects/History.hpp>
+
 #define UNUSED_ARG_(x) (void)x;
 
 namespace microhsm
 {
-    /**
-     * @brief Compute depth of state
-     * @param s Pointer to state to compute depth of
-     * @return depth of state
-     */
-    unsigned int State::computeDepth_(State* s)
+    State::State(unsigned int id, State* parentState, State* initialState) :
+        State(id, parentState, initialState, nullptr, nullptr)
     {
-        State* ancestor = s;
-        unsigned int depth = 0;
-        while (ancestor->parent != nullptr) {
-            depth++;
-            ancestor = ancestor->parent;
-        }
-        return depth;
     }
 
-    State::State(unsigned int id, State* parentState, State* initialState) :
+    State::State(unsigned int id, 
+            State* parentState, State* initialState,
+            History* shallowHistory, History* deepHistory) :
+        Vertex(id, Vertex::eSTATE),
         parent(parentState),
         initial(initialState),
-        ID(id),
-        depth(State::computeDepth_(this))
+        depth(State::computeDepth_(this)),
+        shallowHistory_(shallowHistory),
+        deepHistory_(deepHistory)
     {
-        // Make sure parent is registered as a composite state.
+
         if(parent != nullptr) {
+#if MICROHSM_ASSERTIONS == 1
+            // A composite state must have an initial state
+            MICROHSM_ASSERT(parent->initial != nullptr);
+#endif
+            // Make sure parent is registered as a composite state.
             parent->isComposite_ = true;
         }
+
+        // Initialize shallow and deep history
+        if (shallowHistory_ != nullptr) {
+            shallowHistory_->init(this);
+        }
+        if (deepHistory_ != nullptr) {
+            deepHistory_->init(this);
+        }
+
+    }
+
+    State::~State()
+    {
     }
 
     void State::init(void* ctx)
     {
         this->init_(ctx);
+    }
+
+    void State::entry(void* ctx)
+    {
+        UNUSED_ARG_(ctx);
+    }
+
+    void State::exit(void* ctx)
+    {
+        UNUSED_ARG_(ctx);
     }
 
     bool State::noTransition()
@@ -105,13 +128,17 @@ namespace microhsm
         return true;
     }
 
-    bool State::match(unsigned int event, sTransition* t, void *ctx)
+    /* Static functions */
+    unsigned int State::computeDepth_(State* s)
     {
-        UNUSED_ARG_(ctx);
-        UNUSED_ARG_(event);
-        UNUSED_ARG_(t);
-        // By default: no match
-        return noTransition();
+        State* ancestor = s;
+        unsigned int depth = 0;
+        while (ancestor->parent != nullptr) {
+            depth++;
+            ancestor = ancestor->parent;
+        }
+        return depth;
     }
+
 
 }

@@ -19,6 +19,10 @@ inline const char* get_state_name_(unsigned int id)
             return "S22";
         case 5:
             return "U";
+        case 6:
+            return "V";
+        case 7:
+            return "X";
         default:
             return "UNKOWN";
     }

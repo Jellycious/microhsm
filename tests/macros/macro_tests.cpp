@@ -1,8 +1,8 @@
 #include <unity.h>
 
-#include <test_objects/TestCTX.hpp>
-#include <macro_tests/macro_tests.hpp>
-#include <macro_tests/MacroHSM.hpp>
+#include <context/TestCTX.hpp>
+#include <macros/macro_tests.hpp>
+#include <macros/MacroHSM.hpp>
 
 namespace microhsm_tests
 {

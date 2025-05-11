@@ -2,7 +2,7 @@
 #define _H_MICROHSM
 
 #include <microhsm/config.hpp>
-#include <microhsm/HSM.hpp>
-#include <microhsm/State.hpp>
+#include <microhsm/objects/HSM.hpp>
+#include <microhsm/objects/State.hpp>
 
 #endif

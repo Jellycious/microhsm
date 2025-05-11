@@ -3,22 +3,22 @@
  * @brief Test HSM used for testing defined with macros
  */
 
-#include <microhsm/HSM.hpp>
+#include <microhsm/microhsm.hpp>
 
-#include <macro_tests/MacroHSM.hpp>
-#include <test_objects/TestCTX.hpp>
+#include <macros/MacroHSM.hpp>
+#include <context/TestCTX.hpp>
 
 #define UNUSED_ARG_(x) (void)x;
 
 namespace microhsm_tests
 {
 
-    State* MacroHSM::getState(unsigned int ID)
+    Vertex* MacroHSM::getVertex(unsigned int ID)
     {
         return this->states[ID];
     }
 
-    unsigned int MacroHSM::getMaxStateID()
+    unsigned int MacroHSM::getMaxID()
     {
         return e_mstates_COUNT;
     }

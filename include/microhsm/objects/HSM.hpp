@@ -1,7 +1,7 @@
 #ifndef _H_MICROHSM_HSM
 #define _H_MICROHSM_HSM
 
-#include <microhsm/State.hpp>
+#include <microhsm/objects/State.hpp>
 
 namespace microhsm
 {
@@ -12,7 +12,6 @@ namespace microhsm
         eOK = 0,
         eEVENT_IGNORED,
         eTRANSITION_ERROR,
-        eSTRUCTURE_ERROR
     };
 
     class HSM
@@ -23,9 +22,12 @@ namespace microhsm
              * @brief HSM constructor
              * @param initState Initial state of HSM
              */
-            explicit HSM(State* initial) :
-                curState(initial),
-                initState(initial) {};
+            explicit HSM(State* initial);
+
+            /**
+             * @brief Destructor
+             */
+            virtual ~HSM();
 
             /**
              * @brief Get state
@@ -33,7 +35,7 @@ namespace microhsm
              * @retval `State*` associated to provided ID
              * @retval `nullptr` If state doesn't exist
              */
-            virtual State* getState(unsigned int ID) = 0;
+            virtual Vertex* getVertex(unsigned int ID) = 0;
 
             /**
              * @brief Return state ID with highest value
@@ -41,7 +43,7 @@ namespace microhsm
              * with help of the `getState(ID)` function.
              * @return Number of states 
              */
-            virtual unsigned int getMaxStateID(void) = 0;
+            virtual unsigned int getMaxID(void) = 0;
 
             /**
              * @brief Dispatch event to HSM
@@ -150,6 +152,30 @@ namespace microhsm
             static void performEffect_(sTransition* t, void* ctx);
 
             /**
+             * @brief Update the shallow and deep history of parent states
+             * @param newState The state that has newly been activated
+             */
+            static void updateHistories_(State* newState);
+
+            /**
+             * @brief Perform internal transition on current state
+             * @param t Pointer to transition description
+             * @param ctx Context object
+             * @return eStatus
+             */
+            static eStatus performTransitionInternal_(const sTransition* t, void* ctx);
+
+            /**
+             * @brief Get target of transition
+             * Determines target by evaluating the `targetID` of transition
+             * There is the possibility that the `targetID` is to type of
+             * `ePSEUDO_HISTORY` in which case the last set history state
+             * must be used as the transition target.
+             * @param targetID of target
+             */
+            State* getTransitionTarget_(unsigned int targetID);
+
+            /**
              * @brief Try to match event to State or one of its ancestors
              * @param event Event to match
              * @param t Pointer to transition object.
@@ -168,12 +194,11 @@ namespace microhsm
             eStatus performTransition_(const sTransition* t, void* ctx);
 
             /**
-             * @brief Perform internal transition on current state
-             * @param t Pointer to transition description
-             * @param ctx Context object
-             * @return eStatus
+             * @brief Set the new active state of the HSM
+             * @param newState New active state
              */
-            eStatus performTransitionInternal_(const sTransition* t, void* ctx);
+            void setNewActiveState_(State* newState);
+
     };
 }
 

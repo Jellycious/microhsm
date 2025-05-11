@@ -1,47 +1,75 @@
 #ifndef _H_MICROHSM_STATE
 #define _H_MICROHSM_STATE
 
+#include <microhsm/objects/Vertex.hpp>
+
 namespace microhsm
 {
-    // Forward declaration of HSM
-    class HSM;
-    class State;
 
+    // Forward declaration of history
+    // Not included to avoid recursive inclusion
+    class History;
+
+    /// @brief Enumeration of transition types
     enum eTransitionKind {
         eKIND_EXTERNAL,     /// @brief External transition
         eKIND_LOCAL,        /// @brief Local transition
         eKIND_INTERNAL      /// @brief Internal (self) transition
     };
 
+    /// @brief Function type of a transition effect
     typedef void (*fTransitionEffect)(void *ctx);
 
-    /**
-     * @struct Representation of transition
-     */
+    /// @brief Transition structure
     typedef struct {
-        unsigned int sourceID;      //< Source of transition (State)
-        unsigned int targetID;      //< Target of transition (State/Pseudostate) 
-        eTransitionKind kind;       //< Type of transition
-        fTransitionEffect effect;   //< Effect of transition
+        unsigned int sourceID;      /// @brief Source of transition (State)
+        unsigned int targetID;      /// @brief Target of transition (State/Pseudostate) 
+        eTransitionKind kind;       /// @brief Type of transition
+        fTransitionEffect effect;   /// @brief Effect of transition
     } sTransition;
 
-    class State
+    /// @brief State class
+    class State : public Vertex
     {
+        // Provide deep-coupling with `HSM` for dispatching purposes
+        friend class HSM;
+
         public:
 
+            /**
+             * @brief State constructor
+             * @param id Unique ID of state
+             * @param parent Parent state (leave `nullptr` for top-level state)
+             * @param initial Initial state for composite state (leave `nullptr` for non-composite state)
+             */
             State(unsigned int id, State* parent, State* initial);
+
+            /**
+             * @brief State constructor
+             * @param id Unique ID of state
+             * @param parent Parent state (leave `nullptr` for top-level state)
+             * @param initial Initial state for composite state (leave `nullptr` for non-composite state)
+             * @param deepHistory Pointer to `History` used for deep history (`nullptr` if no history node needs to be tracked)
+             * @param shallowHistory Pointer to `History` used for shallow history (`nullptr` if no history node needs to be tracked)
+             */
+            State(unsigned int id, State* parent, State* initial, History* deepHistory, History* shallowHistory);
+
+            /**
+             * @brief Destructor
+             */
+            virtual ~State();
 
             /**
              * @brief Perform state entry
              * @param ctx Context object
              */
-            virtual void entry(void* ctx) {(void)ctx;};
+            virtual void entry(void* ctx);
 
             /**
              * @brief Perform state exit
              * @param ctx Context object
              */
-            virtual void exit(void* ctx) {(void)ctx;};
+            virtual void exit(void* ctx);
 
             /**
              * @brief Match event to transition
@@ -53,7 +81,7 @@ namespace microhsm
              * @retval `true` Event matched a transition
              * @retval `false` Event did not match any transition
              */
-            virtual bool match(unsigned int event, sTransition* t, void* ctx);
+            virtual bool match(unsigned int event, sTransition* t, void* ctx) = 0;
 
             /**
              * @brief Initialization
@@ -78,6 +106,7 @@ namespace microhsm
 
             /**
              * @brief Get ancestor with ID
+             * @note State itself is not considered to be an ancestor
              * @param ID Unique identifier of ancestor
              * @return Pointer to ancestor state or nullptr
              */
@@ -87,15 +116,9 @@ namespace microhsm
             State* const parent;
             /// @brief Initial state (set to `nullptr` for non-composite states)
             State* const initial;
-            /// @brief Unique identifier of state
-            const unsigned int ID;
             /// @brief Depth of state
             const unsigned int depth;
 
-            /// @brief Hierarchical State Machine
-            HSM* hsm = nullptr;
-            /// @brief Pointer to state used for internal purposes
-            State* tmp = nullptr;
 
         protected:
 
@@ -148,6 +171,14 @@ namespace microhsm
             bool transitionInternal(sTransition* t, fTransitionEffect effect);
 
         private:
+
+            /**
+             * @brief Temporary pointer used for internal purposes
+             * This pointer is used to link states temporarily together.
+             * This is used by `HSM` during event dispatching to create
+             * paths that are traversed during the activation of transitions.
+             */
+            State* tmp_ = nullptr;
             
             /**
              * @brief Compute depth of state
@@ -157,6 +188,9 @@ namespace microhsm
 
             /// @brief Whether state is a composite state
             bool isComposite_ = false;
+
+            History* shallowHistory_ = nullptr;
+            History* deepHistory_ = nullptr;
 
     };
 }

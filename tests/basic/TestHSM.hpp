@@ -33,6 +33,8 @@ namespace microhsm_tests
         eSTATE_S21,
         eSTATE_S22,
         eSTATE_U,
+        eSTATE_V,
+        eSTATE_X,
         eSTATE_COUNT
     };
 
@@ -102,6 +104,20 @@ namespace microhsm_tests
             bool match(unsigned int event, sTransition* t, void* ctx) override;
     };
 
+    class StateV : public TestState
+    {
+        public:
+            StateV() : TestState(eSTATE_V, nullptr, nullptr) {};
+            bool match(unsigned int event, sTransition* t, void* ctx) override;
+    };
+
+    class StateX : public TestState
+    {
+        public:
+            StateX() : TestState(eSTATE_X, nullptr, nullptr) {};
+            bool match(unsigned int event, sTransition* t, void* ctx) override;
+    };
+
     /* HSM Declaration */
     class TestHSM : public HSM
     {
@@ -109,8 +125,8 @@ namespace microhsm_tests
 
         TestHSM() : HSM(&state_s) {};
 
-        State* getState(unsigned int ID) override;
-        unsigned int getMaxStateID() override;
+        Vertex* getVertex(unsigned int ID) override;
+        unsigned int getMaxID() override;
 
         StateS state_s = StateS(&state_s1);
         StateS1 state_s1 = StateS1(&state_s);
@@ -118,14 +134,18 @@ namespace microhsm_tests
         StateS21 state_s21 = StateS21(&state_s2);
         StateS22 state_s22 = StateS22(&state_s2);
         StateU state_u = StateU();
+        StateV state_v = StateV();
+        StateX state_x = StateX();
 
-        State* states[eSTATE_COUNT] = {
+        Vertex* vertices[eSTATE_COUNT] = {
             &state_s,
             &state_s1,
             &state_s2,
             &state_s21,
             &state_s22,
-            &state_u
+            &state_u,
+            &state_v,
+            &state_x
         };
     };
 }
