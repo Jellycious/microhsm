@@ -51,7 +51,7 @@
 /**
  * @brief Declare a top-level state
  * @note A top-level state is a state with no parents
- * @param class_name Class name of state    
+ * @param class_name Class name of state
  * @param id Unique Identifier of state (`unsigned int`)
  */
 #define HSM_DECLARE_STATE_TOP_LEVEL(class_name, id, ...)                                            \
@@ -81,7 +81,7 @@
 /**
  * @brief Declare a top-level state
  * @note A top-level state is a state with no parents
- * @param class_name Class name of state    
+ * @param class_name Class name of state
  * @param id Unique Identifier of state (`unsigned int`)
  * @param parent_state_class Class name of parent state
  */
@@ -117,7 +117,7 @@
  * extend the functionality of normal states by adding hooks such as `init_`.
  * The difference between `HSM_DECLARE_STATE` and `HSM_DECLARE_BASE_STATE`
  * is that `HSM_DECLARE_BASE_STATE` does not declare a match function.
- * @param base_class Class name of state    
+ * @param base_class Class name of state
  */
 #define HSM_DECLARE_BASE_STATE(base_class, ...)                                     \
     class base_class : public State {                                               \
@@ -135,7 +135,7 @@
 /**
  * @brief Declare top-level state from base class
  * @note Top-level state is a state that has no parent state
- * @param class_name Class name of state    
+ * @param class_name Class name of state
  * @param base_class Class name of base class
  */
 #define HSM_DECLARE_STATE_TOP_LEVEL_FROM_BASE(class_name, base_class, ...)                          \
@@ -164,7 +164,7 @@
 
 /**
  * @brief Declare state from base class
- * @param class_name Class name of state    
+ * @param class_name Class name of state
  * @param parent_state_class Class name of parent state
  * @param base_class Class name of base class
  */

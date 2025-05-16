@@ -36,7 +36,7 @@
          * @param id State ID
          * @return String of state ID
          */
-        #define MICROHSM_TRACE_STATE_NAME(id) id 
+        #define MICROHSM_TRACE_STATE_NAME(id) id
     #endif
 
     #ifndef MICROHSM_TRACE_EVENT_NAME
@@ -94,7 +94,5 @@
         #define MICROHSM_TRACE_MESSAGE(msg) std::cout << "MESSAGE," << msg<< std::endl;
     #endif
 #endif
-
-
 
 #endif /* _H_MICROHSM_CONFIG */

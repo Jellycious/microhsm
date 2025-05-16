@@ -79,7 +79,7 @@ namespace microhsm_tests
         testSetup();
         eStatus status;
 
-        // C: S1 -> S2 
+        // C: S1 -> S2
         status = macroHSM.dispatch(eMEVENT_C, &testCTX);
         TEST_ASSERT_EQUAL(eOK, status);
         TEST_ASSERT_TRUE(macroHSM.inState(eMSTATE_S));
@@ -89,7 +89,7 @@ namespace microhsm_tests
         TEST_ASSERT_FALSE(macroHSM.inState(eMSTATE_S22));
         TEST_ASSERT_TRUE(testCTX.getFlag());
 
-        // C: S2 -> S1 
+        // C: S2 -> S1
         status = macroHSM.dispatch(eMEVENT_C, &testCTX);
         TEST_ASSERT_EQUAL(eOK, status);
         TEST_ASSERT_TRUE(macroHSM.inState(eMSTATE_S));

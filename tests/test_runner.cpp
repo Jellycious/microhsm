@@ -3,8 +3,6 @@
 #include "history/history_tests.hpp"
 #include <unity.h>
 
-#include <iostream>
-
 namespace microhsm_tests
 {
     // Setup and Teardown

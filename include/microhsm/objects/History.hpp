@@ -1,3 +1,6 @@
+#ifndef _H_MICROHSM_HISTORY
+#define _H_MICROHSM_HISTORY
+
 #include <microhsm/objects/State.hpp>
 
 namespace microhsm
@@ -46,9 +49,11 @@ namespace microhsm
              */
             void init_shallow(State* parent);
 
-            /// @brief Default history state (can be `nullptr`) 
-            State* const defaultHistory_; 
+            /// @brief Default history state (can be `nullptr`)
+            State* const defaultHistory_;
             /// @brief Internal structure for storing history
             State* historyState_ = nullptr;
     };
 }
+
+#endif

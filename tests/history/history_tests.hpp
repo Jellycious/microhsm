@@ -3,7 +3,7 @@
 
 namespace microhsm_tests
 {
-    void run_history_tests(void); 
+    void run_history_tests(void);
 }
 
 #endif

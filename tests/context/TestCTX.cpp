@@ -1,6 +1,6 @@
 #include <context/TestCTX.hpp>
 
-namespace microhsm_tests 
+namespace microhsm_tests
 {
 
             void TestCTX::init()

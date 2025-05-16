@@ -5,7 +5,7 @@
 #include <basic/basic_tests.hpp>
 #include <basic/TestHSM.hpp>
 
-namespace microhsm_tests 
+namespace microhsm_tests
 {
 
     static TestCTX testCTX = TestCTX();
@@ -74,7 +74,7 @@ namespace microhsm_tests
         TEST_ASSERT_TRUE(s->isComposite());
         TEST_ASSERT_FALSE(curState->isComposite());
         TEST_ASSERT_TRUE(s2->isComposite());
-        
+
 
     }
 
@@ -191,7 +191,7 @@ namespace microhsm_tests
         setupTest();
         eStatus status;
 
-        // C: S1 -> S2 
+        // C: S1 -> S2
         status = testHSM.dispatch(eEVENT_C, &testCTX);
         TEST_ASSERT_EQUAL(eOK, status);
         TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S));
@@ -211,7 +211,7 @@ namespace microhsm_tests
         TEST_ASSERT_EQUAL(0, testHSM.state_s22.getExitCount());
         TEST_ASSERT_TRUE(testCTX.getFlag());
 
-        // C: S2 -> S1 
+        // C: S2 -> S1
         status = testHSM.dispatch(eEVENT_C, &testCTX);
         TEST_ASSERT_EQUAL(eOK, status);
         TEST_ASSERT_TRUE(testHSM.inState(eSTATE_S));

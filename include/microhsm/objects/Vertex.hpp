@@ -1,3 +1,6 @@
+#ifndef _H_MICROHSM_VERTEX 
+#define _H_MICROHSM_VERTEX 
+
 namespace microhsm 
 {
 
@@ -24,3 +27,5 @@ namespace microhsm
     };
 
 }
+
+#endif

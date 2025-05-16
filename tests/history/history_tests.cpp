@@ -2,7 +2,6 @@
 
 #include "history_tests.hpp"
 #include "HistoryHSM.hpp"
-#include "context/TestCTX.hpp"
 
 namespace microhsm_tests {
 
@@ -17,7 +16,7 @@ namespace microhsm_tests {
 #if MICROHSM_TRACING == 1
         MICROHSM_TRACE_MESSAGE("Initialized")
 #endif
-        
+
     }
 
     /**

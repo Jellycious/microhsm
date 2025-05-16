@@ -3,7 +3,7 @@
 
 #define UNUSED_ARG_(arg) (void)arg;
 
-namespace microhsm_tests 
+namespace microhsm_tests
 {
 
     unsigned int HistoryHSM::getMaxID(void)

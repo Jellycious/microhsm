@@ -61,7 +61,7 @@ namespace microhsm_tests
             StateI stateI_ = StateI(nullptr);
 
             /**
-             * @brief Mapping of IDs to states 
+             * @brief Mapping of IDs to states
              * `getVertex(unsigned int)` expects this list entries
              * to be stored in the same order as the enumerations
              */
