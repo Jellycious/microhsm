@@ -30,6 +30,13 @@ namespace microhsm
             virtual ~HSM();
 
             /**
+             * @brief Initialize HSM
+             * @param Context object
+             * Set the hsm to the underlying states
+             */
+            void init(void* ctx);
+
+            /**
              * @brief Get state
              * @param ID Unique Identifier of state
              * @retval `State*` associated to provided ID
@@ -40,7 +47,7 @@ namespace microhsm
             /**
              * @brief Return state ID with highest value
              * This is used by `HSM` to iterate over all states together
-             * with help of the `getState(ID)` function.
+             * with help of the `getVertex(ID)` function.
              * @return Number of states 
              */
             virtual unsigned int getMaxID(void) = 0;
@@ -54,13 +61,6 @@ namespace microhsm
              * @retval eTRANSITION_ERROR Error occurred during dispatch
              */
             eStatus dispatch(unsigned int event, void* ctx);
-
-            /**
-             * @brief Initialize HSM
-             * @param Context object
-             * Set the hsm to the underlying states
-             */
-            void init(void* ctx);
 
             /**
              * @brief Get current state of HSM
@@ -93,63 +93,15 @@ namespace microhsm
 
         private:
 
-            /**
-             * @brief Exits states until the `target` state is reached.
-             * @param start Pointer to state from where to start from
-             * @param target Pointer to target state
-             * @param ctx Context object
-             * @return Pointer to state if found, otherwise `nullptr`
-             */
-            static State* exitUntilTarget_(State* start, State* target, void* ctx);
-
-            /**
-             * @brief Perform entry effects until `target` (including)
-             * @note Does not perform entry behavior of `startState`
-             * @param startState State to start from (can be `nullptr`)
-             * @param targetState Final state to enter (cannot be `nullptr`)
-             * @param Context object
-             * @return `targetState` if successfull, `nullptr` otherwise. 
-             */
-            static State* enterUntilTarget_(State* startState, State* targetState, void* ctx);
-
-            /**
-             * @brief Find least common ancestor
-             * @note As side-effect creates a path from LCA to `b`
-             * @param a Pointer to first state
-             * @param b Pointer to second state
-             * @return Least common ancestor, `nullptr` if LCA doesn't exist
-             */
-            static State* findLCA_(State* a, State* b);
-
-            /**
-             * @brief Perform entry action
-             * @param s State
-             * @param ctx Context object
-             */
-            static void performEntry_(State* s, void* ctx);
-
-            /**
-             * @brief Perform exit action
-             * @param s State
-             * @param ctx Context object
-             */
-            static void performExit_(State* s, void* ctx);
-
-            /**
-             * @brief Enter initial pseudostates
-             * @note Will continue until the last possible initial state
-             * @param s State
-             * @param ctx Context object
-             * @return Last state that was entered
-             */
-            static State* enterInitialStates_(State* s, void* ctx);
+            /* --- Static Functions --- */
 
             /**
              * @brief Perform effect action
+             * @note Will ignore effect if t->effect is `nullptr`
              * @param t Pointer to transition descriptor
              * @param ctx Context object
              */
-            static void performEffect_(sTransition* t, void* ctx);
+            static void performEffect_(const sTransition* t, void* ctx);
 
             /**
              * @brief Update the shallow and deep history of parent states
@@ -166,11 +118,64 @@ namespace microhsm
             static eStatus performTransitionInternal_(const sTransition* t, void* ctx);
 
             /**
+             * @brief Find least common ancestor
+             * @note As side-effect creates a path from LCA to `b`
+             * @param a Pointer to first state
+             * @param b Pointer to second state
+             * @return Least common ancestor, `nullptr` if LCA doesn't exist
+             */
+            static State* findLCA_(State* a, State* b);
+
+            /* --- Member Functions --- */
+
+            /**
+             * @brief Exits states until the `target` state is reached.
+             * @param start Pointer to state from where to start from
+             * @param target Pointer to target state
+             * @param ctx Context object
+             * @return Pointer to state if found, otherwise `nullptr`
+             */
+            State* exitUntilTarget_(State* start, State* target, void* ctx);
+
+            /**
+             * @brief Perform entry effects until `target` (including)
+             * @note Does not perform entry behavior of `startState`
+             * @param startState State to start from (can be `nullptr`)
+             * @param targetState Final state to enter (cannot be `nullptr`)
+             * @param Context object
+             * @return `targetState` if successfull, `nullptr` otherwise. 
+             */
+            State* enterUntilTarget_(State* startState, State* targetState, void* ctx);
+
+            /**
+             * @brief Enter a statertementen geldt vaak een VvE-reglement waarin be
+             * @param s State
+             * @param ctx Context object
+             */
+            void enterState_(State* s, void* ctx);
+
+            /**
+             * @brief Exit state
+             * @param s State
+             * @param ctx Context object
+             */
+            void exitState_(State* s, void* ctx);
+
+            /**
+             * @brief Enter initial pseudostates
+             * @note Will continue until the last possible initial state
+             * @param s State
+             * @param ctx Context object
+             * @return Last state that was entered
+             */
+            State* enterInitialStates_(State* s, void* ctx);
+
+            /**
              * @brief Get target of transition
              * Determines target by evaluating the `targetID` of transition
-             * There is the possibility that the `targetID` is to type of
+             * There is the possibility that the `targetID` is of type:
              * `ePSEUDO_HISTORY` in which case the last set history state
-             * must be used as the transition target.
+             * will be returned as the transition target.
              * @param targetID of target
              */
             State* getTransitionTarget_(unsigned int targetID);

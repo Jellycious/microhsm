@@ -24,7 +24,7 @@ namespace microhsm_tests
     )
 
     HSM_CREATE_ID_LIST(e_mstates,
-            eMSTATE_S,
+            eMSTATE_S = 8,
             eMSTATE_S1,
             eMSTATE_S2,
             eMSTATE_S21,
@@ -46,12 +46,13 @@ namespace microhsm_tests
     )
 
     // Declare states
-    HSM_DECLARE_STATE_FROM_BASE(MStateS, MBaseState)
-    HSM_DECLARE_STATE_FROM_BASE(MStateS1, MBaseState)
-    HSM_DECLARE_STATE_FROM_BASE(MStateS2, MBaseState)
-    HSM_DECLARE_STATE_FROM_BASE(MStateS21, MBaseState)
-    HSM_DECLARE_STATE_FROM_BASE(MStateS22, MBaseState)
-    HSM_DECLARE_STATE_FROM_BASE(MStateU, MBaseState)
+    HSM_DECLARE_STATE_TOP_LEVEL_FROM_BASE(MStateS, MBaseState)
+    HSM_DECLARE_STATE_FROM_BASE(MStateS1, MStateS, MBaseState)
+    HSM_DECLARE_STATE_FROM_BASE(MStateS2, MStateS, MBaseState)
+    HSM_DECLARE_STATE_FROM_BASE(MStateS21, MStateS2, MBaseState)
+    HSM_DECLARE_STATE_FROM_BASE(MStateS22, MStateS2, MBaseState)
+
+    HSM_DECLARE_STATE_TOP_LEVEL_FROM_BASE(MStateU, MBaseState)
 
     /* HSM Declaration */
     class MacroHSM : public HSM
@@ -63,14 +64,14 @@ namespace microhsm_tests
         Vertex* getVertex(unsigned int ID) override;
         unsigned int getMaxID() override;
 
-        MStateS state_s         = MStateS(eMSTATE_S, nullptr, &state_s1);
+        MStateS state_s         = MStateS(eMSTATE_S, &state_s1);
         MStateS1 state_s1       = MStateS1(eMSTATE_S1, &state_s, nullptr);
         MStateS2 state_s2       = MStateS2(eMSTATE_S2, &state_s, &state_s21);
         MStateS21 state_s21     = MStateS21(eMSTATE_S21, &state_s2, nullptr);
         MStateS22 state_s22     = MStateS22(eMSTATE_S22, &state_s2, nullptr);
-        MStateU state_u         = MStateU(eMSTATE_U, nullptr, nullptr);
+        MStateU state_u         = MStateU(eMSTATE_U, nullptr);
 
-        State* states[e_mstates_COUNT] = {
+        State* states[6] = {
             &state_s,
             &state_s1,
             &state_s2,

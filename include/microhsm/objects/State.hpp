@@ -49,10 +49,10 @@ namespace microhsm
              * @param id Unique ID of state
              * @param parent Parent state (leave `nullptr` for top-level state)
              * @param initial Initial state for composite state (leave `nullptr` for non-composite state)
-             * @param deepHistory Pointer to `History` used for deep history (`nullptr` if no history node needs to be tracked)
              * @param shallowHistory Pointer to `History` used for shallow history (`nullptr` if no history node needs to be tracked)
+             * @param deepHistory Pointer to `History` used for deep history (`nullptr` if no history node needs to be tracked)
              */
-            State(unsigned int id, State* parent, State* initial, History* deepHistory, History* shallowHistory);
+            State(unsigned int id, State* parent, State* initial, History* shallowHistory, History* deepHistory);
 
             /**
              * @brief Destructor
@@ -125,7 +125,7 @@ namespace microhsm
             /**
              * @brief Initialization callback
              * Called after state initialization. Provides user 
-             * with hook to perform actions after initialization.
+             * with a hook to perform actions after initialization.
              * @param ctx Context object
              */
             virtual void init_(void* ctx) {(void)ctx;}

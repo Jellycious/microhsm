@@ -6,7 +6,7 @@ namespace microhsm
 {
     HSM::HSM(State* initial) :
         curState(initial),
-        initState(initial) 
+        initState(initial)
     {
     };
 
@@ -14,6 +14,71 @@ namespace microhsm
     {
     }
 
+    /* --- Static Functions --- */
+    void HSM::performEffect_(const sTransition* t, void* ctx)
+    {
+        if (t->effect != nullptr) {
+            // Perform transition effect
+            t->effect(ctx);
+        }
+    }
+
+    void HSM::updateHistories_(State* newState)
+    {
+#if MICROHSM_ASSERTIONS == 1
+        // `newState` must be 'leaf' state
+        MICROHSM_ASSERT(newState->isComposite() == false);
+#endif
+        // Set histories
+        State* s = newState;
+        while (s->parent != nullptr) {
+            // Update new history
+            if (s->parent->deepHistory_ != nullptr) {
+                s->parent->deepHistory_->setHistoryState(newState);
+            }
+            // Update shallow history
+            if (s->parent->shallowHistory_ != nullptr) {
+                s->parent->shallowHistory_->setHistoryState(s);
+            }
+            s = s->parent;
+        }
+
+    }
+
+    eStatus HSM::performTransitionInternal_(const sTransition* t, void* ctx)
+    {
+        // Perform transition effect
+        performEffect_(t, ctx);
+        return eOK;
+    }
+
+    State* HSM::findLCA_(State* a, State* b)
+    {
+        State* s1 = a;
+        State* s2 = b;
+
+        while(s1 != s2) {
+            // Move up from deepest state
+            if (s1 == nullptr || s2 == nullptr) return nullptr;
+
+            if (s1->depth > s2->depth) {
+                s1 = s1->parent;
+            }
+            else if (s2->depth > s1->depth) {
+                s2 = s2->parent;
+            }
+            else {
+                s1 = s1->parent;
+                s2 = s2->parent;
+            }
+        }
+
+        // s1 contains lowest common ancestor or `nullptr
+        return s1;
+    }
+    /* --- End static functions --- */
+
+    /* --- Member functions --- */
     void HSM::init(void* ctx)
     {
         // Initialize all states
@@ -31,7 +96,7 @@ namespace microhsm
 
         // Perform entry on initial state
         State* s = this->initState;
-        this->performEntry_(s, ctx);
+        this->enterState_(s, ctx);
 
         // Walk down until the leaf initial state
         s = enterInitialStates_(s, ctx);
@@ -40,6 +105,43 @@ namespace microhsm
 
         // Handle any initial anonymous transitions
         this->dispatch(EVENT_ANONYMOUS, ctx);
+    }
+
+    eStatus HSM::dispatch(unsigned int event, void* ctx)
+    {
+        sTransition t;
+        eStatus status = eTRANSITION_ERROR;
+
+        // Match event to state
+        bool match = this->matchStateOrAncestor_(event, &t, ctx);
+        if (!match) {
+#if MICROHSM_TRACING == 1
+            MICROHSM_TRACE_DISPATCH_IGNORED(event);
+#endif
+            return eEVENT_IGNORED;
+        }
+
+#if MICROHSM_TRACING == 1
+            MICROHSM_TRACE_DISPATCH_MATCHED(event, t.sourceID);
+#endif
+
+        // Perform transition
+        status = this->performTransition_(&t, ctx);
+        if (status != eOK) return status;
+
+        // Handle anonymous transitions repeatedly (Run-to-completion)
+        match = this->matchStateOrAncestor_(0, &t, ctx);
+        while (match) {
+#if MICROHSM_TRACING == 1
+            MICROHSM_TRACE_DISPATCH_MATCHED(0, t.sourceID);
+#endif
+            status = this->performTransition_(&t, ctx);
+            if (status != eOK) return status;
+
+            match = this->matchStateOrAncestor_(0, &t, ctx);
+        }
+
+        return status;
     }
 
     State* HSM::getCurrentState()
@@ -69,49 +171,6 @@ namespace microhsm
         return match;
     }
 
-    eStatus HSM::dispatch(unsigned int event, void* ctx)
-    {
-        sTransition t;
-        eStatus status = eTRANSITION_ERROR;
-
-        // Match event to state
-        bool match = this->matchStateOrAncestor_(event, &t, ctx);
-        if (!match) {
-#if MICROHSM_TRACING == 1
-            MICROHSM_TRACE_DISPATCH_IGNORED(event);
-#endif
-            return eEVENT_IGNORED;
-        }
-
-#if MICROHSM_TRACING == 1
-            MICROHSM_TRACE_DISPATCH_MATCHED(event, t.sourceID);
-#endif
-
-        // Perform transition
-        status = this->performTransition_(&t, ctx);
-        if (status != eOK) {
-            return status;
-        }
-
-        // Handle anonymous transitions repeatedly (Run-to-completion)
-        match = this->matchStateOrAncestor_(0, &t, ctx);
-        while (match) {
-
-#if MICROHSM_TRACING == 1
-            MICROHSM_TRACE_DISPATCH_MATCHED(0, t.sourceID);
-#endif
-
-            status = this->performTransition_(&t, ctx);
-            if (status != eOK) {
-                return status;
-            }
-
-            match = this->matchStateOrAncestor_(0, &t, ctx);
-        }
-
-        return status;
-    }
-
     eStatus HSM::performTransition_(const sTransition* t, void* ctx)
     {
         /*
@@ -132,7 +191,7 @@ namespace microhsm
          */
 
         State* s = nullptr;
-        
+
         // 0. Determine source and target
         Vertex* sourceV = this->getVertex(t->sourceID);
 #if MICROHSM_ASSERTIONS == 1
@@ -157,14 +216,14 @@ namespace microhsm
         s = exitUntilTarget_(source, lca, ctx);
 
         // 5. Handle exit of source (local v.s. external)
-        if(t->kind == eKIND_EXTERNAL && lca == source) performExit_(lca, ctx);
+        if(t->kind == eKIND_EXTERNAL && lca == source) exitState_(lca, ctx);
 
         // 6. Perform transition effect
-        if (t->effect != nullptr) t->effect(ctx);
+        performEffect_(t, ctx);
 
         // 7. Handle re-entry of source (local v.s. external)
-        if(t->kind == eKIND_EXTERNAL && lca == source) performEntry_(lca, ctx);
-        
+        if(t->kind == eKIND_EXTERNAL && lca == source) enterState_(lca, ctx);
+
         // 8. Enter until reaching target state
         s = enterUntilTarget_(lca, target, ctx);
 #if MICROHSM_ASSERTIONS == 1
@@ -181,7 +240,7 @@ namespace microhsm
 
     void HSM::setNewActiveState_(State* s)
     {
-        this->curState = s; 
+        this->curState = s;
         updateHistories_(s);
     }
 
@@ -195,21 +254,10 @@ namespace microhsm
                 History* h = static_cast<History*>(targetV);
                 return h->getHistoryState();
             }
-            default:
-                break;
+            default: {
+                return nullptr;
+            }
         }
-        return nullptr;
-    }
-
-    /* --- Static Functions --- */
-    eStatus HSM::performTransitionInternal_(const sTransition* t, void* ctx)
-    {
-        // Perform transition effect
-        if (t->effect != nullptr) {
-            t->effect(ctx);
-        }
-
-        return eOK;
     }
 
     State* HSM::exitUntilTarget_(State* startState, State* target, void* ctx)
@@ -217,7 +265,7 @@ namespace microhsm
         State* s = startState;
         while (s != nullptr) {
             if (s == target) break;
-            performExit_(s, ctx);
+            exitState_(s, ctx);
             s = s->parent;
         }
         return s;
@@ -238,53 +286,34 @@ namespace microhsm
 
         // Walk path and perform entries
         while(s != target) {
-            performEntry_(s, ctx);
+            enterState_(s, ctx);
             s = s->tmp_;
         }
-        performEntry_(s, ctx);
+        enterState_(s, ctx);
 
         return s;
     }
 
-    State* HSM::findLCA_(State* a, State* b)
+    void HSM::enterState_(State* s, void* ctx)
     {
-        State* s1 = a;
-        State* s2 = b;
-
-        while(s1 != s2) {
-            // Move up from deepest state 
-            if (s1 == nullptr || s2 == nullptr) return nullptr;
-
-            if (s1->depth > s2->depth) {
-                s1 = s1->parent;
-            }
-            else if (s2->depth > s1->depth) {
-                s2 = s2->parent;
-            }
-            else {
-                s1 = s1->parent;
-                s2 = s2->parent;
-            }
-        }
-
-        // s1 contains lowest common ancestor or `nullptr
-        return s1;
-    }
-
-    void HSM::performEntry_(State* s, void* ctx)
-    {
+        // Assign current state to newly entered state
+        this->curState = s;
 #if MICROHSM_TRACING == 1
         MICROHSM_TRACE_ENTRY(s->ID);
 #endif
+        // Perform entry effect
         s->entry(ctx);
     }
 
-    void HSM::performExit_(State* s, void* ctx)
+    void HSM::exitState_(State* s, void* ctx)
     {
 #if MICROHSM_TRACING == 1
         MICROHSM_TRACE_EXIT(s->ID);
 #endif
+        // Perform exit effect
         s->exit(ctx);
+        // Assign current state to parent of state we just left
+        this->curState = s->parent;
     }
 
     State* HSM::enterInitialStates_(State* state, void* ctx)
@@ -293,23 +322,9 @@ namespace microhsm
         while (s->initial != nullptr) {
             // Traverse initial states until reaching a 'leaf' state
             s = s->initial;
-            performEntry_(s, ctx);
+            enterState_(s, ctx);
         }
         return s;
     }
-
-    void HSM::performEffect_(sTransition* t, void* ctx)
-    {
-        if (t->effect != nullptr) {
-            // Perform transition effect
-            t->effect(ctx);
-        }
-    }
-
-    void HSM::updateHistories_(State* newState)
-    {
-    }
-    /* --- End static functions --- */
-
 
 }

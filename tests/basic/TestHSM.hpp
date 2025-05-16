@@ -72,28 +72,28 @@ namespace microhsm_tests
     class StateS1 : public TestState
     {
         public:
-            StateS1(State* parentState) : TestState(eSTATE_S1, parentState, nullptr) {};
+            StateS1(StateS* parentState) : TestState(eSTATE_S1, parentState, nullptr) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
     };
 
     class StateS2 : public TestState
     {
         public:
-            StateS2(State* parentState, State* initialState) : TestState(eSTATE_S2, parentState, initialState) {};
+            StateS2(StateS* parentState, State* initialState) : TestState(eSTATE_S2, parentState, initialState) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
     };
 
     class StateS21 : public TestState
     {
         public:
-            StateS21(State* parentState) : TestState(eSTATE_S21, parentState, nullptr) {};
+            StateS21(StateS2* parentState) : TestState(eSTATE_S21, parentState, nullptr) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
     };
 
     class StateS22 : public TestState
     {
         public:
-            StateS22(State* parentState) : TestState(eSTATE_S22, parentState, nullptr) {};
+            StateS22(StateS2* parentState) : TestState(eSTATE_S22, parentState, nullptr) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
     };
 

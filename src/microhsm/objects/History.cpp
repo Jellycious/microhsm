@@ -9,22 +9,54 @@ namespace microhsm
     {
     }
 
-    History::History(unsigned int id, State* defaultHistory) : 
-        Vertex(id, ePSEUDO_HISTORY)
+    History::History(unsigned int id, State* defaultHistory) :
+        Vertex(id, ePSEUDO_HISTORY),
+        defaultHistory_(defaultHistory)
     {
         this->setHistoryState(defaultHistory);
     }
 
-    void History::init(State* parent)
+    void History::init_deep(State* parent)
     {
-#if MICROHSM_ASSERTIONS == 1
-        MICROHSM_ASSERT(parent != nullptr); // Parent must exist
-#endif        
 
-        if (this->historyState_ == nullptr) {
-            // History node has no default transition
-            setHistoryState(parent->initial);
+#if MICROHSM_ASSERTIONS == 1
+        MICROHSM_ASSERT(parent != nullptr);             // Parent must exist and be composite
+        MICROHSM_ASSERT(parent->initial != nullptr);    // Parent must be a composite state with initial state set
+#endif
+        // Determine default history state
+        State* s = (defaultHistory_ == nullptr) ? parent->initial : defaultHistory_;
+
+#if MICROHSM_ASSERTIONS == 1
+        MICROHSM_ASSERT(s->isDescendentOf(parent->ID)); // Default history must be descendent of parent
+        MICROHSM_ASSERT(s != nullptr);                  // Parent must be a composite state with initial state set
+#endif
+
+        // Walk down parents initial states until leave state is reached
+        while (s->initial != nullptr) {
+            s = s->initial;
         }
+
+        // Set history state
+        setHistoryState(s);
+    }
+
+    void History::init_shallow(State* parent)
+    {
+
+#if MICROHSM_ASSERTIONS == 1
+        MICROHSM_ASSERT(parent != nullptr);             // Parent must exist and be composite
+        MICROHSM_ASSERT(parent->initial != nullptr);    // Parent must be a composite state with initial state set
+#endif
+        // Determine default history state
+        State* s = (defaultHistory_ == nullptr) ? parent->initial : defaultHistory_;
+
+#if MICROHSM_ASSERTIONS == 1
+        MICROHSM_ASSERT(s->isDescendentOf(parent->ID)); // Default history must be descendent of parent
+        MICROHSM_ASSERT(s != nullptr);                  // Parent must be a composite state with initial state set
+#endif
+
+        // Set history state
+        setHistoryState(s);
     }
 
     void History::setHistoryState(State* state)

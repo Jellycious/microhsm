@@ -66,7 +66,7 @@
         #define MICROHSM_TRACE_EXIT(id) std::cout << "EXIT," << MICROHSM_TRACE_STATE_NAME(id) << std::endl
     #endif
 
-    #ifndef MICOHSM_TRACE_DISPATCH_IGNORED
+    #ifndef MICROHSM_TRACE_DISPATCH_IGNORED
         #include <iostream>
         /**
          * @brief Called when an event did not match any transitions
@@ -75,7 +75,7 @@
         #define MICROHSM_TRACE_DISPATCH_IGNORED(event) std::cout << "IGNORED," << MICROHSM_TRACE_EVENT_NAME(event) << std::endl
     #endif
 
-    #ifndef MICOHSM_TRACE_DISPATCH_MATCHED
+    #ifndef MICROHSM_TRACE_DISPATCH_MATCHED
         #include <iostream>
         /**
          * @brief Called when an event matched a transition on a state
@@ -83,6 +83,15 @@
          * @param id State ID
          */
         #define MICROHSM_TRACE_DISPATCH_MATCHED(event, id) std::cout << "MATCH," << MICROHSM_TRACE_EVENT_NAME(event) << "," << MICROHSM_TRACE_STATE_NAME(id) << std::endl
+    #endif
+
+    #ifndef MICROHSM_TRACE_MESSAGE
+        #include <iostream>
+        /**
+         * @brief Use to send a random trace message
+         * @param msg Message string
+         */
+        #define MICROHSM_TRACE_MESSAGE(msg) std::cout << "MESSAGE," << msg<< std::endl;
     #endif
 #endif
 

@@ -1,3 +1,4 @@
+#include "microhsm/config.hpp"
 #include <microhsm/microhsm.hpp>
 
 #include <microhsm/objects/History.hpp>
@@ -11,7 +12,7 @@ namespace microhsm
     {
     }
 
-    State::State(unsigned int id, 
+    State::State(unsigned int id,
             State* parentState, State* initialState,
             History* shallowHistory, History* deepHistory) :
         Vertex(id, Vertex::eSTATE),
@@ -31,13 +32,12 @@ namespace microhsm
             parent->isComposite_ = true;
         }
 
-        // Initialize shallow and deep history
-        if (shallowHistory_ != nullptr) {
-            shallowHistory_->init(this);
+#if MICROHSM_ASSERTIONS == 1
+        if (initial != nullptr) {
+            MICROHSM_ASSERT(initial != this);
         }
-        if (deepHistory_ != nullptr) {
-            deepHistory_->init(this);
-        }
+#endif
+
 
     }
 
@@ -47,6 +47,19 @@ namespace microhsm
 
     void State::init(void* ctx)
     {
+#if MICROHSM_ASSERTIONS == 1
+        if (initial != nullptr) {
+            MICROHSM_ASSERT(initial->isDescendentOf(this->ID));
+        }
+#endif
+
+        // Initialize history nodes
+        if (shallowHistory_ != nullptr) {
+            shallowHistory_->init_shallow(this);
+        }
+        if (deepHistory_ != nullptr) {
+            deepHistory_->init_deep(this);
+        }
         this->init_(ctx);
     }
 

@@ -15,12 +15,16 @@ namespace microhsm_tests
 
     Vertex* MacroHSM::getVertex(unsigned int ID)
     {
-        return this->states[ID];
+        unsigned int index = ID - 8;
+        if (index >= (sizeof(states) / sizeof(Vertex*))) {
+                return nullptr;
+        }
+        return this->states[index];
     }
 
     unsigned int MacroHSM::getMaxID()
     {
-        return e_mstates_COUNT;
+        return eMSTATE_U;
     }
 
     HSM_DEFINE_STATE_INIT(MBaseState)

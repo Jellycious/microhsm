@@ -12,8 +12,14 @@ namespace microhsm_tests
 
     void testSetup()
     {
+#if MICROHSM_TRACING == 1
+        MICROHSM_TRACE_MESSAGE("Initializing macro test HSM")
+#endif
         testCTX.init();
         macroHSM.init(static_cast<void*>(&testCTX));
+#if MICROHSM_TRACING == 1
+        MICROHSM_TRACE_MESSAGE("Initialized")
+#endif
     }
 
     void mtest_initial_configuration()

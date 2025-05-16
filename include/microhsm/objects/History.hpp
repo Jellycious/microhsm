@@ -4,6 +4,8 @@ namespace microhsm
 {
     class History : public Vertex
     {
+        friend class State;
+
         public:
             /**
              * @brief Constructor
@@ -18,10 +20,6 @@ namespace microhsm
              */
             History(unsigned int id, State* defaultHistory);
 
-            /**
-             * @brief Initialization function called by `State`
-             */
-            void init(State* parent);
 
             /**
              * @brief Set the history to `state`
@@ -38,6 +36,18 @@ namespace microhsm
 
         private:
 
+            /**
+             * @brief Initialize as deep history, called by `State`
+             */
+            void init_deep(State* parent);
+
+            /**
+             * @brief Initialize as shallow history, called by `State`
+             */
+            void init_shallow(State* parent);
+
+            /// @brief Default history state (can be `nullptr`) 
+            State* const defaultHistory_; 
             /// @brief Internal structure for storing history
             State* historyState_ = nullptr;
     };
