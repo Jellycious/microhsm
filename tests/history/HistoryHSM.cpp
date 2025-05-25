@@ -1,5 +1,4 @@
-#include "HistoryHSM.hpp"
-#include "microhsm/macros.hpp"
+#include <history/HistoryHSM.hpp>
 
 #define UNUSED_ARG_(arg) (void)arg;
 

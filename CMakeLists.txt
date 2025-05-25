@@ -48,4 +48,7 @@ add_subdirectory(src/microhsm)
 
 if(BUILD_TESTING)
     add_subdirectory(tests)
+
+    enable_testing()
+    add_test(NAME microhsm_tests COMMAND microhsm_tests)
 endif()

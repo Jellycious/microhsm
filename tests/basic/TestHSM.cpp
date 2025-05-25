@@ -5,9 +5,6 @@
  *      Practical Statecharts in C/C++ by Miro Samek, Ph.D
  */
 
-#include "microhsm/objects/State.hpp"
-#include <microhsm/microhsm.hpp>
-
 #include <context/TestCTX.hpp>
 #include <basic/TestHSM.hpp>
 

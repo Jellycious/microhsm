@@ -7,10 +7,7 @@ namespace microhsm_tests
 {
     // Setup and Teardown
     void setUp(void) {};
-
     void tearDown(void) {};
-
-
 
     // Main
     int main(void)
@@ -19,11 +16,12 @@ namespace microhsm_tests
         run_basic_tests();
         run_macro_tests();
         run_history_tests();
+
         return UNITY_END();
     }
 
 } // microhsm_tests
 
-void setUp(void) {microhsm_tests::setUp();}
-void tearDown(void) {microhsm_tests::tearDown();}
-int main(void) {microhsm_tests::main();}
+void setUp(void) {return microhsm_tests::setUp();}
+void tearDown(void) {return microhsm_tests::tearDown();}
+int main(void) {return microhsm_tests::main();}

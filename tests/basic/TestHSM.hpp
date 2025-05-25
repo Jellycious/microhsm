@@ -14,7 +14,7 @@ using namespace microhsm;
 
 namespace microhsm_tests
 {
-    /// @brief Event enumerations
+    /// Events IDs for `TestHSM`
     enum e_events : unsigned int {
         eEVENT_ANONYMOUS = 0,
         eEVENT_A,
@@ -26,6 +26,7 @@ namespace microhsm_tests
         eEVENT_G,
     };
 
+    /// States IDs for `TestHSM`
     enum e_states : unsigned int {
         eSTATE_S = 0,
         eSTATE_S1,
@@ -38,12 +39,12 @@ namespace microhsm_tests
         eSTATE_COUNT
     };
 
-    class TestState : public State
+    class TestState : public BaseState
     {
         public:
 
-            TestState(unsigned int stateID, State* parentState, State* initialState) :
-                State(stateID, parentState, initialState) {};
+            TestState(unsigned int stateID, BaseState* parentState, BaseState* initialState) :
+                BaseState(stateID, parentState, initialState) {};
 
             void entry(void* ctx) override;
             void exit(void* ctx) override;
@@ -65,7 +66,7 @@ namespace microhsm_tests
     class StateS : public TestState
     {
         public:
-            StateS(State* initialState) : TestState(eSTATE_S, nullptr, initialState) {};
+            StateS(BaseState* initialState) : TestState(eSTATE_S, nullptr, initialState) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
     };
 
@@ -79,7 +80,7 @@ namespace microhsm_tests
     class StateS2 : public TestState
     {
         public:
-            StateS2(StateS* parentState, State* initialState) : TestState(eSTATE_S2, parentState, initialState) {};
+            StateS2(StateS* parentState, BaseState* initialState) : TestState(eSTATE_S2, parentState, initialState) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
     };
 
@@ -119,11 +120,11 @@ namespace microhsm_tests
     };
 
     /* HSM Declaration */
-    class TestHSM : public HSM
+    class TestHSM : public BaseHSM
     {
     public:
 
-        TestHSM() : HSM(&state_s) {};
+        TestHSM() : BaseHSM(&state_s) {};
 
         Vertex* getVertex(unsigned int ID) override;
         unsigned int getMaxID() override;

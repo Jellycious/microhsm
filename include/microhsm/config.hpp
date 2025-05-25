@@ -1,3 +1,11 @@
+/**
+ * @file config.hpp
+ * @brief MicroHSM configuration options
+ *
+ * @author Jelle Meijer
+ * @date 2025-05-23
+ */
+
 #ifndef _H_MICROHSM_CONFIG
 #define _H_MICROHSM_CONFIG
 

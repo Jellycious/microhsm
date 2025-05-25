@@ -1,8 +1,7 @@
 #ifndef _H_MICROHSM_TESTS_HISTORYHSM
 #define _H_MICROHSM_TESTS_HISTORYHSM
 
-#include <microhsm/objects/HSM.hpp>
-#include <microhsm/objects/History.hpp>
+#include "microhsm/objects/History.hpp"
 #include <microhsm/microhsm.hpp>
 #include <microhsm/macros.hpp>
 
@@ -40,18 +39,18 @@ namespace microhsm_tests
 
     HSM_DECLARE_STATE_TOP_LEVEL(StateI, eSTATE_I)
 
-    class HistoryHSM : public HSM
+    class HistoryHSM : public BaseHSM
     {
         public:
-            HistoryHSM() : HSM(&stateI_) {};
+            HistoryHSM() : BaseHSM(&stateI_) {};
 
             Vertex* getVertex(unsigned int id) override;
             unsigned int getMaxID(void) override;
 
         private:
             StateH stateH_ = StateH(&stateH1_, &stateHShallowHistory_, &stateHDeepHistory_);
-            History stateHShallowHistory_ = History(eSTATE_H_SHALLOW_HISTORY, &stateH2_);
-            History stateHDeepHistory_ = History(eSTATE_H_DEEP_HISTORY, nullptr);
+            ShallowHistory stateHShallowHistory_ = ShallowHistory(eSTATE_H_SHALLOW_HISTORY, &stateH2_);
+            DeepHistory stateHDeepHistory_ = DeepHistory(eSTATE_H_DEEP_HISTORY, nullptr);
             StateH1 stateH1_ = StateH1(&stateH_, &stateH11_);
             StateH11 stateH11_ = StateH11(&stateH1_, nullptr);
             StateH12 stateH12_ = StateH12(&stateH1_, nullptr);

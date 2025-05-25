@@ -1,3 +1,11 @@
+/**
+ * @file macros.hpp
+ * @brief MicroHSM macros
+ *
+ * @author Jelle Meijer
+ * @date 2025-05-23
+ */
+
 #ifndef _H_MICROHSM_MACROS
 #define _H_MICROHSM_MACROS
 
@@ -54,61 +62,60 @@
  * @param class_name Class name of state
  * @param id Unique Identifier of state (`unsigned int`)
  */
-#define HSM_DECLARE_STATE_TOP_LEVEL(class_name, id, ...)                                            \
-    class class_name : public State {                                                               \
-        public:                                                                                     \
-            /**                                                                                     \
-             * @brief Constructor for class_name                                                    \
-             * @param initialState Pointer to initial state (has to be`nullptr` for leaf states)    \
-             */                                                                                     \
-            class_name(State* initialState) :                                                       \
-            State(id, nullptr, initialState) {};                                                    \
-                                                                                                    \
-            /**                                                                                     \
-             * @brief Constructor for class_name                                                    \
-             * @param initialState Pointer to initial state (has to be`nullptr` for leaf states)    \
-             * @param shallowHistory Pointer to shallow history node, can be `nullptr` (`History*`) \
-             * @param deepHistory Pointer to deep history node, can be `nullptr` (`History*`)       \
-             */                                                                                     \
-            class_name(State* initialState,                                                         \
-                    History* shallowHistory, History* deepHistory) :                                \
-            State(id, nullptr, initialState, shallowHistory, deepHistory) {};                       \
-                                                                                                    \
-            bool match(unsigned int event, sTransition* t, void* ctx) override;                     \
-            __VA_ARGS__                                                                             \
+#define HSM_DECLARE_STATE_TOP_LEVEL(class_name, id, ...)                                                    \
+    class class_name : public BaseState {                                                                   \
+        public:                                                                                             \
+            /**                                                                                             \
+             * @brief Constructor for class_name                                                            \
+             * @param initialState Pointer to initial state (has to be`nullptr` for leaf states)            \
+             */                                                                                             \
+            class_name(BaseState* initialState) :                                                           \
+            BaseState(id, nullptr, initialState) {};                                                        \
+                                                                                                            \
+            /**                                                                                             \
+             * @brief Constructor for class_name                                                            \
+             * @param initialState Pointer to initial state (has to be`nullptr` for leaf states)            \
+             * @param shallowHistory Pointer to shallow history node, can be `nullptr` (`ShallowHistory*`)  \
+             * @param deepHistory Pointer to deep history node, can be `nullptr` (`DeepHistory*`)           \
+             */                                                                                             \
+            class_name(BaseState* initialState,                                                             \
+                    ShallowHistory* shallowHistory, DeepHistory* deepHistory) :                             \
+            BaseState(id, nullptr, initialState, shallowHistory, deepHistory) {};                           \
+                                                                                                            \
+            bool match(unsigned int event, sTransition* t, void* ctx) override;                             \
+            __VA_ARGS__                                                                                     \
     };
 
 /**
- * @brief Declare a top-level state
- * @note A top-level state is a state with no parents
+ * @brief Declare a state
  * @param class_name Class name of state
  * @param id Unique Identifier of state (`unsigned int`)
  * @param parent_state_class Class name of parent state
  */
-#define HSM_DECLARE_STATE(class_name, id, parent_state_class, ...)                                  \
-    class class_name : public State {                                                               \
-        public:                                                                                     \
-            /**                                                                                     \
-             * @brief Constructor for class_name                                                    \
-             * @param parentState Pointer to parent state (`parent_state_class*`)                   \
-             * @param initialState Pointer to initial state (has to be`nullptr` for leaf states)    \
-             */                                                                                     \
-            class_name(parent_state_class* parentState, State* initialState) :                      \
-            State(id, parentState, initialState) {};                                                \
-                                                                                                    \
-            /**                                                                                     \
-             * @brief Constructor for class_name                                                    \
-             * @param parentState Pointer to parent state (`parent_state_class*`)                   \
-             * @param initialState Pointer to initial state (has to be`nullptr` for leaf states)    \
-             * @param shallowHistory Pointer to shallow history node, can be `nullptr` (`History*`) \
-             * @param deepHistory Pointer to deep history node, can be `nullptr` (`History*`)       \
-             */                                                                                     \
-            class_name(parent_state_class* parentState, State* initialState,                        \
-                    History* shallowHistory, History* deepHistory) :                                \
-            State(id, parentState, initialState, shallowHistory, deepHistory) {};                   \
-                                                                                                    \
-            bool match(unsigned int event, sTransition* t, void* ctx) override;                     \
-            __VA_ARGS__                                                                             \
+#define HSM_DECLARE_STATE(class_name, id, parent_state_class, ...)                                          \
+    class class_name : public BaseState {                                                                   \
+        public:                                                                                             \
+            /**                                                                                             \
+             * @brief Constructor for class_name                                                            \
+             * @param parentState Pointer to parent state (`parent_state_class*`)                           \
+             * @param initialState Pointer to initial state (has to be`nullptr` for leaf states)            \
+             */                                                                                             \
+            class_name(parent_state_class* parentState, BaseState* initialState) :                          \
+            BaseState(id, parentState, initialState) {};                                                    \
+                                                                                                            \
+            /**                                                                                             \
+             * @brief Constructor for class_name                                                            \
+             * @param parentState Pointer to parent state (`parent_state_class*`)                           \
+             * @param initialState Pointer to initial state (has to be`nullptr` for leaf states)            \
+             * @param shallowHistory Pointer to shallow history node, can be `nullptr` (`ShallowHistory*`)  \
+             * @param deepHistory Pointer to deep history node, can be `nullptr` (`DeepHistory*`)           \
+             */                                                                                             \
+            class_name(parent_state_class* parentState, BaseState* initialState,                            \
+                    ShallowHistory* shallowHistory, DeepHistory* deepHistory) :                             \
+            BaseState(id, parentState, initialState, shallowHistory, deepHistory) {};                       \
+                                                                                                            \
+            bool match(unsigned int event, sTransition* t, void* ctx) override;                             \
+            __VA_ARGS__                                                                                     \
     };
 
 /**
@@ -116,20 +123,20 @@
  * A base state can be used as a base class for other states. Normally used to
  * extend the functionality of normal states by adding hooks such as `init_`.
  * The difference between `HSM_DECLARE_STATE` and `HSM_DECLARE_BASE_STATE`
- * is that `HSM_DECLARE_BASE_STATE` does not declare a match function.
+ * is that `HSM_DECLARE_BASE_STATE` does not declare a `match` function.
  * @param base_class Class name of state
  */
-#define HSM_DECLARE_BASE_STATE(base_class, ...)                                     \
-    class base_class : public State {                                               \
-        public:                                                                     \
-            base_class(unsigned int id, State* parentState, State* initialState) :  \
-            State(id, parentState, initialState) {};                                \
-                                                                                    \
-            base_class(unsigned int id, State* parentState, State* initialState,    \
-                    History* shallowHistory, History* deepHistory) :                \
-            State(id, parentState, initialState, shallowHistory, deepHistory) {};   \
-                                                                                    \
-            __VA_ARGS__                                                             \
+#define HSM_DECLARE_BASE_STATE(base_class, ...)                                                 \
+    class base_class : public BaseState {                                                       \
+        public:                                                                                 \
+            base_class(unsigned int id, BaseState* parentState, BaseState* initialState) :      \
+            BaseState(id, parentState, initialState) {};                                        \
+                                                                                                \
+            base_class(unsigned int id, BaseState* parentState, BaseState* initialState,        \
+                    ShallowHistory* shallowHistory, DeepHistory* deepHistory) :                 \
+            BaseState(id, parentState, initialState, shallowHistory, deepHistory) {};           \
+                                                                                                \
+            __VA_ARGS__                                                                         \
     };
 
 /**
@@ -145,7 +152,7 @@
              * @param id Unique state ID                                                            \
              * @param initialState Poiter to initial state (has to be 'nullptr for leaf states)     \
              */                                                                                     \
-            class_name(unsigned int id, State* initialState) :                                      \
+            class_name(unsigned int id, BaseState* initialState) :                                  \
             base_class(id, nullptr, initialState) {};                                               \
                                                                                                     \
             /* Constructor of class_name                                                            \
@@ -154,8 +161,8 @@
              * @param shallowHistory Pointer to shallow history node                                \
              * @param deepHistory Pointer to deep history node                                      \
              */                                                                                     \
-            class_name(unsigned int id, State* initialState,                                        \
-                    History* shallowHistory, History* deepHistory) :                                \
+            class_name(unsigned int id, BaseState* initialState,                                    \
+                    ShallowHistory* shallowHistory, DeepHistory* deepHistory) :                     \
             base_class(id, nullptr, initialState, shallowHistory, deepHistory) {};                  \
                                                                                                     \
             bool match(unsigned int event, sTransition* t, void* ctx) override;                     \
@@ -177,7 +184,7 @@
              * @param parentState Pointer to parent state                                           \
              * @param initialState Poiter to initial state (has to be 'nullptr for leaf states)     \
              */                                                                                     \
-            class_name(unsigned int id, parent_state_class* parentState, State* initialState) :     \
+            class_name(unsigned int id, parent_state_class* parentState, BaseState* initialState) :     \
             base_class(id, parentState, initialState) {};                                           \
                                                                                                     \
             /**                                                                                     \
@@ -185,11 +192,11 @@
              * @param id Unique state ID                                                            \
              * @param parentState Pointer to parent state (`parent_state_class*`)                   \
              * @param initialState Poiter to initial state (has to be 'nullptr` for leaf states)    \
-             * @param shallowHistory Pointer to shallow history node (`History*`)                   \
-             * @param deepHistory Pointer to deep history node (`History*`)                         \
+             * @param shallowHistory Pointer to shallow history node (`ShallowHistory*`)            \
+             * @param deepHistory Pointer to deep history node (`DeepHistory*`)                     \
              */                                                                                     \
-            class_name(unsigned int id, parent_state_class* parentState, State* initialState,       \
-                    History* shallowHistory, History* deepHistory) :                                \
+            class_name(unsigned int id, parent_state_class* parentState, BaseState* initialState,   \
+                    ShallowHistory* shallowHistory, DeepHistory* deepHistory) :                     \
             base_class(id, parentState, initialState, shallowHistory, deepHistory) {};              \
                                                                                                     \
             bool match(unsigned int event, sTransition* t, void* ctx) override;                     \

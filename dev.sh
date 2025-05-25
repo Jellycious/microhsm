@@ -28,7 +28,7 @@ build() {
 }
 
 run_test() {
-    ${BUILD_DIR}/${BUILD_CONFIG}/bin/microhsm_tests
+    ctest -V --output-on-failure --test-dir ${BUILD_DIR}/${BUILD_CONFIG}
 }
 
 clean() {

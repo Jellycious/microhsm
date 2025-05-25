@@ -3,8 +3,6 @@
  * @brief Test HSM used for testing defined with macros
  */
 
-#include <microhsm/microhsm.hpp>
-
 #include <macros/MacroHSM.hpp>
 #include <context/TestCTX.hpp>
 

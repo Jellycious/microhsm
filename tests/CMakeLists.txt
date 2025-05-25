@@ -21,6 +21,3 @@ target_link_libraries(microhsm_tests PRIVATE
 )
 
 add_definitions(-DUNITY_INCLUDE_CONFIG_H)
-
-enable_testing()
-add_test(NAME microhsm_tests COMMAND microhsm_tests)

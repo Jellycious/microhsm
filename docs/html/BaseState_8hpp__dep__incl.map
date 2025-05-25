@@ -1,0 +1,11 @@
+<map id="/home/jelle/Projects/cpp/microhsm/include/microhsm/objects/BaseState.hpp" name="/home/jelle/Projects/cpp/microhsm/include/microhsm/objects/BaseState.hpp">
+<area shape="rect" id="node1" title="Contains State declaration/definition." alt="" coords="587,5,827,61"/>
+<area shape="rect" id="node2" href="$microhsm_8hpp.html" title="MicroHSM includes." alt="" coords="535,213,723,269"/>
+<area shape="rect" id="node8" href="$BaseHSM_8hpp.html" title="Base for Hierarchical State Machines." alt="" coords="589,109,825,165"/>
+<area shape="rect" id="node9" href="$History_8hpp.html" title="History Vertex used for tracking deep/shallow history." alt="" coords="849,109,1068,165"/>
+<area shape="rect" id="node3" href="$BaseHSM_8cpp.html" title="Base for Hierarchical State Machines." alt="" coords="5,317,216,373"/>
+<area shape="rect" id="node4" href="$BaseState_8cpp.html" title="Contains State declaration/definition." alt="" coords="904,317,1115,373"/>
+<area shape="rect" id="node5" href="$History_8cpp.html" title="History Vertex used for tracking deep/shallow history." alt="" coords="240,317,451,373"/>
+<area shape="rect" id="node6" href="$Vertex_8cpp.html" title="Vertex declaration." alt="" coords="475,317,685,373"/>
+<area shape="rect" id="node7" href="$macros_8hpp.html" title="MicroHSM macros." alt="" coords="709,317,880,373"/>
+</map>

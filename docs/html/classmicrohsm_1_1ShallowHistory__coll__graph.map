@@ -1,0 +1,6 @@
+<map id="microhsm::ShallowHistory" name="microhsm::ShallowHistory">
+<area shape="rect" id="node1" title="Shallow history class." alt="" coords="5,249,199,276"/>
+<area shape="rect" id="node2" href="$classmicrohsm_1_1BaseHistory.html" title="History base class." alt="" coords="15,173,189,200"/>
+<area shape="rect" id="node3" href="$classmicrohsm_1_1Vertex.html" title="Vertex class used for states and pseudostates." alt="" coords="28,5,165,32"/>
+<area shape="rect" id="node4" href="$classmicrohsm_1_1BaseState.html" title="Base class for all states." alt="" coords="119,83,280,109"/>
+</map>

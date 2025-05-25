@@ -1,0 +1,5 @@
+<map id="microhsm::BaseHSM" name="microhsm::BaseHSM">
+<area shape="rect" id="node1" title="Base class for hierarchical state machines." alt="" coords="7,188,165,215"/>
+<area shape="rect" id="node2" href="$classmicrohsm_1_1BaseState.html" title="Base class for all states." alt="" coords="5,83,167,109"/>
+<area shape="rect" id="node3" href="$classmicrohsm_1_1Vertex.html" title="Vertex class used for states and pseudostates." alt="" coords="17,5,155,32"/>
+</map>

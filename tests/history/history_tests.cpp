@@ -1,7 +1,7 @@
 #include <unity.h>
 
-#include "history_tests.hpp"
-#include "HistoryHSM.hpp"
+#include <history/history_tests.hpp>
+#include <history/HistoryHSM.hpp>
 
 namespace microhsm_tests {
 
@@ -27,8 +27,8 @@ namespace microhsm_tests {
         setup();
         TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_I));
 
-        History* shallow = static_cast<History*>(historyHSM.getVertex(eSTATE_H_SHALLOW_HISTORY));
-        History* deep = static_cast<History*>(historyHSM.getVertex(eSTATE_H_DEEP_HISTORY));
+        BaseHistory* shallow = static_cast<BaseHistory*>(historyHSM.getVertex(eSTATE_H_SHALLOW_HISTORY));
+        BaseHistory* deep = static_cast<BaseHistory*>(historyHSM.getVertex(eSTATE_H_DEEP_HISTORY));
 
         TEST_ASSERT_TRUE(shallow->getHistoryState() != nullptr);
         TEST_ASSERT_TRUE(deep->getHistoryState() != nullptr);
@@ -100,7 +100,7 @@ namespace microhsm_tests {
         status = historyHSM.dispatch(eHEVENT_A, nullptr);
         TEST_ASSERT_EQUAL(eOK, status);
 
-        State* final = historyHSM.getCurrentState();
+        BaseState* final = historyHSM.getCurrentState();
         TEST_ASSERT_EQUAL(eSTATE_H11, final->ID);
     }
 
@@ -132,7 +132,7 @@ namespace microhsm_tests {
         status = historyHSM.dispatch(eHEVENT_B, nullptr);
         TEST_ASSERT_EQUAL(eOK, status);
 
-        State* final = historyHSM.getCurrentState();
+        BaseState* final = historyHSM.getCurrentState();
         TEST_ASSERT_EQUAL(eSTATE_H12, final->ID);
     }
 

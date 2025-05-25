@@ -52,13 +52,13 @@ namespace microhsm_tests
         setupTest();
         TEST_ASSERT_EQUAL(testHSM.getCurrentState()->ID, eSTATE_S1);
 
-        State* curState = testHSM.getCurrentState();
+        BaseState* curState = testHSM.getCurrentState();
         TEST_ASSERT_TRUE(curState->isDescendentOf(eSTATE_S));
         TEST_ASSERT_TRUE(curState->isDescendentOf(eSTATE_S1));
         TEST_ASSERT_FALSE(curState->isDescendentOf(eSTATE_S2));
         TEST_ASSERT_FALSE(curState->isDescendentOf(eSTATE_U));
 
-        State* ancestor = curState->getAncestor(eSTATE_S);
+        BaseState* ancestor = curState->getAncestor(eSTATE_S);
         TEST_ASSERT_NOT_NULL(ancestor);
         TEST_ASSERT_EQUAL(ancestor->ID, eSTATE_S);
         TEST_ASSERT_NULL(curState->getAncestor(eSTATE_S1));
@@ -68,8 +68,8 @@ namespace microhsm_tests
         Vertex* s2V = testHSM.getVertex(eSTATE_S2);
         TEST_ASSERT_NOT_NULL(sV);
         TEST_ASSERT_NOT_NULL(s2V);
-        State* s = static_cast<State*>(sV);
-        State* s2 = static_cast<State*>(s2V);
+        BaseState* s = static_cast<BaseState*>(sV);
+        BaseState* s2 = static_cast<BaseState*>(s2V);
 
         TEST_ASSERT_TRUE(s->isComposite());
         TEST_ASSERT_FALSE(curState->isComposite());

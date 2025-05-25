@@ -55,11 +55,11 @@ namespace microhsm_tests
     HSM_DECLARE_STATE_TOP_LEVEL_FROM_BASE(MStateU, MBaseState)
 
     /* HSM Declaration */
-    class MacroHSM : public HSM
+    class MacroHSM : public BaseHSM
     {
     public:
 
-        MacroHSM() : HSM(&state_s) {};
+        MacroHSM() : BaseHSM(&state_s) {};
 
         Vertex* getVertex(unsigned int ID) override;
         unsigned int getMaxID() override;
@@ -71,7 +71,7 @@ namespace microhsm_tests
         MStateS22 state_s22     = MStateS22(eMSTATE_S22, &state_s2, nullptr);
         MStateU state_u         = MStateU(eMSTATE_U, nullptr);
 
-        State* states[6] = {
+        BaseState* states[6] = {
             &state_s,
             &state_s1,
             &state_s2,
