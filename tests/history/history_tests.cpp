@@ -102,6 +102,13 @@ namespace microhsm_tests {
 
         BaseState* final = historyHSM.getCurrentState();
         TEST_ASSERT_EQUAL(eSTATE_H11, final->ID);
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H1));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H11));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H12));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H2));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H21));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_I));
     }
 
     void htest_stateh12_deep()
@@ -134,7 +141,91 @@ namespace microhsm_tests {
 
         BaseState* final = historyHSM.getCurrentState();
         TEST_ASSERT_EQUAL(eSTATE_H12, final->ID);
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H1));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H12));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H11));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H2));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H21));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_I));
     }
+
+    void htest_stateh21_shallow()
+    {
+        setup();
+        // eEVENT_C: I -> H(H1(H11))
+        eStatus status = historyHSM.dispatch(eHEVENT_C, nullptr);
+        TEST_ASSERT_EQUAL(eOK, status);
+
+        // eEVENT_A: H(H1(H11)) -> H(H2(H21))
+        status = historyHSM.dispatch(eHEVENT_A, nullptr);
+        TEST_ASSERT_EQUAL(eOK, status);
+
+        // eEVENT_A: H(H2(H21)) -> H(H2(H22))
+        status = historyHSM.dispatch(eHEVENT_A, nullptr);
+        TEST_ASSERT_EQUAL(eOK, status);
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_I));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H1));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H2));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H21));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H22));
+
+        // eEVENT_A: H(H2(H22)) -> I
+        status = historyHSM.dispatch(eHEVENT_A, nullptr);
+        TEST_ASSERT_EQUAL(eOK, status);
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_I));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H));
+
+        // eEVENT_A: I -> H(shallow history)
+        status = historyHSM.dispatch(eHEVENT_A, nullptr);
+        TEST_ASSERT_EQUAL(eOK, status);
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_I));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H1));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H2));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H21));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H22));
+    }
+
+    void htest_stateh21_deep()
+    {
+        setup();
+        // eEVENT_C: I -> H(H1(H11))
+        eStatus status = historyHSM.dispatch(eHEVENT_C, nullptr);
+        TEST_ASSERT_EQUAL(eOK, status);
+
+        // eEVENT_A: H(H1(H11)) -> H(H2(H21))
+        status = historyHSM.dispatch(eHEVENT_A, nullptr);
+        TEST_ASSERT_EQUAL(eOK, status);
+
+        // eEVENT_A: H(H2(H21)) -> H(H2(H22))
+        status = historyHSM.dispatch(eHEVENT_A, nullptr);
+        TEST_ASSERT_EQUAL(eOK, status);
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_I));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H1));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H2));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H21));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H22));
+
+        // eEVENT_A: H(H2(H22)) -> I
+        status = historyHSM.dispatch(eHEVENT_A, nullptr);
+        TEST_ASSERT_EQUAL(eOK, status);
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_I));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H));
+
+        // eEVENT_B: I -> H(deep history)
+        status = historyHSM.dispatch(eHEVENT_B, nullptr);
+        TEST_ASSERT_EQUAL(eOK, status);
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_I));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H1));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H2));
+        TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H21));
+        TEST_ASSERT_TRUE(historyHSM.inState(eSTATE_H22));
+    }
+
 
     void run_history_tests()
     {
@@ -143,6 +234,8 @@ namespace microhsm_tests {
         RUN_TEST(htest_history_default_deep);
         RUN_TEST(htest_stateh12_shallow);
         RUN_TEST(htest_stateh12_deep);
+        RUN_TEST(htest_stateh21_shallow);
+        RUN_TEST(htest_stateh21_deep);
     }
 
 }
