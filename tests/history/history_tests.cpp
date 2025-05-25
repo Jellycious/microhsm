@@ -150,7 +150,7 @@ namespace microhsm_tests {
         TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_I));
     }
 
-    void htest_stateh21_shallow()
+    void htest_stateh22_shallow()
     {
         setup();
         // eEVENT_C: I -> H(H1(H11))
@@ -188,7 +188,7 @@ namespace microhsm_tests {
         TEST_ASSERT_FALSE(historyHSM.inState(eSTATE_H22));
     }
 
-    void htest_stateh21_deep()
+    void htest_stateh22_deep()
     {
         setup();
         // eEVENT_C: I -> H(H1(H11))
@@ -234,8 +234,8 @@ namespace microhsm_tests {
         RUN_TEST(htest_history_default_deep);
         RUN_TEST(htest_stateh12_shallow);
         RUN_TEST(htest_stateh12_deep);
-        RUN_TEST(htest_stateh21_shallow);
-        RUN_TEST(htest_stateh21_deep);
+        RUN_TEST(htest_stateh22_shallow);
+        RUN_TEST(htest_stateh22_deep);
     }
 
 }

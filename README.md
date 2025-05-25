@@ -20,6 +20,7 @@ state machines.
 - **No use of dynamic memory** - Static memory only
 - **No use of C++ standard library** - Ideal for bare-metal
 - **Build as static libary or include directly** - Integrate in any project
+- **Lightweight** - Library consists of less than 750 lines of code
 
 ---
 
@@ -28,7 +29,7 @@ state machines.
 A Hierarchical State Machine (HSM) is a behavioral modeling construct that extends
 traditional finite state machines (FSMs) with support for nested (hierarchical) states.
 In an HSM, states can be organized in a tree-like structure where a superstate can
-contain one or more substates. This enables powerful reuse of behavior, 
+contain one or more substates. This enables powerful reuse of behavior,
 reduces redundancy, and simplifies complex state models.
 
 HSMs follow formal semantics defined by the UML (Unified Modeling Language) State Machine specification, 
@@ -63,7 +64,7 @@ One can define state machines in two different ways:
 
 - Option 2 - Defining states and HSMs through the use of macros (**recommended**)
 > Define your HSMs using a set of expressive macros. This approach offers a more concise and readable syntax, 
-significantly reducing boilerplate code. While it abstracts away 
+significantly reducing boilerplate code. While it abstracts away
 some implementation details, it streamlines development and improves maintainability for most use cases.
 
 ### Example
