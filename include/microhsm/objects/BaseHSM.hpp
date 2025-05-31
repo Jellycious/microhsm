@@ -53,7 +53,7 @@ namespace microhsm
              * @brief HSM constructor.
              * @param initState Initial state of HSM
              */
-            explicit BaseHSM(BaseState* initial);
+            explicit BaseHSM(BaseState& initial);
 
             /**
              * @brief Destructor.
@@ -118,8 +118,9 @@ namespace microhsm
 
             /// @brief Current active state (always a leaf state)
             BaseState* curState;
-            /// @brief Initial state (`nullptr` for leaf states)
-            BaseState* initState;
+
+            /// @brief Initial state
+            BaseState& initState;
 
         private:
 

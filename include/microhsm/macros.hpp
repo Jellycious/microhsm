@@ -25,17 +25,13 @@
     };
 
 /**
- * @brief Create id list
- * Will create an enumerator with the provide ids
- * The first id will be assigned '0'
- * At the end an identifier '`enum_name`_COUNT' will be placed
- * this identifier represents the total number of states.
- * IDs are generally used to unique identify a vertex inside
- * of the HSM.
+ * @brief Create vertex ID list
+ * Will create an enumeration for all vertex IDs
+ * Every state and pseudostate should have an unique ID associated to it
  * @param enum_name Enum type identifier
  * @param ... Other id identifiers
  */
-#define HSM_CREATE_ID_LIST(enum_name, ...)                          \
+#define HSM_CREATE_VERTEX_LIST(enum_name, ...)                       \
     enum enum_name: unsigned int {                                  \
         __VA_ARGS__                                                 \
     };
@@ -63,7 +59,7 @@
  * @param id Unique Identifier of state (`unsigned int`)
  */
 #define HSM_DECLARE_STATE_TOP_LEVEL(class_name, id, ...)                                                    \
-    class class_name : public BaseState {                                                                   \
+    class class_name : public microhsm::BaseState {                                                                   \
         public:                                                                                             \
             /**                                                                                             \
              * @brief Constructor for class_name                                                            \
@@ -79,10 +75,10 @@
              * @param deepHistory Pointer to deep history node, can be `nullptr` (`DeepHistory*`)           \
              */                                                                                             \
             class_name(BaseState* initialState,                                                             \
-                    ShallowHistory* shallowHistory, DeepHistory* deepHistory) :                             \
+                    microhsm::ShallowHistory* shallowHistory, microhsm::DeepHistory* deepHistory) :                             \
             BaseState(id, nullptr, initialState, shallowHistory, deepHistory) {};                           \
                                                                                                             \
-            bool match(unsigned int event, sTransition* t, void* ctx) override;                             \
+            bool match(unsigned int event, microhsm::sTransition* t, void* ctx) override;                             \
             __VA_ARGS__                                                                                     \
     };
 
@@ -93,15 +89,15 @@
  * @param parent_state_class Class name of parent state
  */
 #define HSM_DECLARE_STATE(class_name, id, parent_state_class, ...)                                          \
-    class class_name : public BaseState {                                                                   \
+    class class_name : public microhsm::BaseState {                                                         \
         public:                                                                                             \
             /**                                                                                             \
              * @brief Constructor for class_name                                                            \
              * @param parentState Pointer to parent state (`parent_state_class*`)                           \
              * @param initialState Pointer to initial state (has to be`nullptr` for leaf states)            \
              */                                                                                             \
-            class_name(parent_state_class* parentState, BaseState* initialState) :                          \
-            BaseState(id, parentState, initialState) {};                                                    \
+            class_name(parent_state_class* parentState, microhsm::BaseState* initialState) :                \
+            microhsm::BaseState(id, parentState, initialState) {};                                          \
                                                                                                             \
             /**                                                                                             \
              * @brief Constructor for class_name                                                            \
@@ -110,11 +106,11 @@
              * @param shallowHistory Pointer to shallow history node, can be `nullptr` (`ShallowHistory*`)  \
              * @param deepHistory Pointer to deep history node, can be `nullptr` (`DeepHistory*`)           \
              */                                                                                             \
-            class_name(parent_state_class* parentState, BaseState* initialState,                            \
-                    ShallowHistory* shallowHistory, DeepHistory* deepHistory) :                             \
-            BaseState(id, parentState, initialState, shallowHistory, deepHistory) {};                       \
+            class_name(parent_state_class* parentState, microhsm::BaseState* initialState,                  \
+                    microhsm::ShallowHistory* shallowHistory, microhsm::DeepHistory* deepHistory) :         \
+            microhsm::BaseState(id, parentState, initialState, shallowHistory, deepHistory) {};             \
                                                                                                             \
-            bool match(unsigned int event, sTransition* t, void* ctx) override;                             \
+            bool match(unsigned int event, microhsm::sTransition* t, void* ctx) override;                   \
             __VA_ARGS__                                                                                     \
     };
 
@@ -165,7 +161,7 @@
                     ShallowHistory* shallowHistory, DeepHistory* deepHistory) :                     \
             base_class(id, nullptr, initialState, shallowHistory, deepHistory) {};                  \
                                                                                                     \
-            bool match(unsigned int event, sTransition* t, void* ctx) override;                     \
+            bool match(unsigned int event, microhsm::sTransition* t, void* ctx) override;                     \
             __VA_ARGS__                                                                             \
     };
 
@@ -199,7 +195,7 @@
                     ShallowHistory* shallowHistory, DeepHistory* deepHistory) :                     \
             base_class(id, parentState, initialState, shallowHistory, deepHistory) {};              \
                                                                                                     \
-            bool match(unsigned int event, sTransition* t, void* ctx) override;                     \
+            bool match(unsigned int event, microhsm::sTransition* t, void* ctx) override;                     \
             __VA_ARGS__                                                                             \
     };
 
@@ -223,7 +219,7 @@
  * Return type is `bool`
  */
 #define HSM_DEFINE_STATE_MATCH(class_name)                                       \
-            bool class_name::match(unsigned int event, sTransition* t, void* ctx)
+            bool class_name::match(unsigned int event, microhsm::sTransition* t, void* ctx)
 
 /**
  * @brief Define arbitrary state function

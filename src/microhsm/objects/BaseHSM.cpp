@@ -10,8 +10,8 @@
 
 namespace microhsm
 {
-    BaseHSM::BaseHSM(BaseState* initial) :
-        curState(initial),
+    BaseHSM::BaseHSM(BaseState& initial) :
+        curState(&initial),
         initState(initial)
     {
     };
@@ -101,7 +101,7 @@ namespace microhsm
         }
 
         // Perform entry on initial state
-        BaseState* s = this->initState;
+        BaseState* s = &this->initState;
         this->enterState_(s, ctx);
 
         // Walk down until the leaf initial state

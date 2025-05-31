@@ -13,22 +13,30 @@ USAGE_MSG="USAGE: ./dev.sh [OPTIONS]
 DESCRIPTION: Utility script that eases development
 
 OPTIONS:
-    -d, --dev       = Watch changes in source code and build/test upon changes
-    -t, --test      = Run test library
-    -r, --release   = Release build
-    -c, --clean     = Clean before building
+    -r, --release       = Release build
+    -t, --test          = Build tests
+    -c, --clean         = Clean before building
+    -e, --example       = Build examples
+    -d, --dev           = Start dev server (rebuilds and tests upon code changes)
+    -re, --run-examples = Run examples
+    -rt, --run-tests    = Run tests
 "
 
 
 POSITIONAL_ARGS=()
 
 build() {
-    cmake -S ${ROOT_DIR} -B ${BUILD_DIR}/${BUILD_CONFIG} -DCMAKE_BUILD_TYPE=${BUILD_CONFIG}
+    cmake -S ${ROOT_DIR} -B ${BUILD_DIR}/${BUILD_CONFIG} -DCMAKE_BUILD_TYPE=${BUILD_CONFIG} ${BUILD_OPTS}
     make -C ${BUILD_DIR}/${BUILD_CONFIG}
 }
 
 run_test() {
     ctest -V --output-on-failure --test-dir ${BUILD_DIR}/${BUILD_CONFIG}
+}
+
+run_examples() {
+    ${BUILD_DIR}/${BUILD_CONFIG}/bin/microhsm_example_basic
+    ${BUILD_DIR}/${BUILD_CONFIG}/bin/microhsm_example_macros
 }
 
 clean() {
@@ -39,12 +47,13 @@ clean() {
 while [[ $# -gt 0 ]]; do
     case $1 in
         -t|--test)
-            RUNTEST=1
-            break
+            BUILDTEST=1
+            shift
             ;;
         -d|--dev)
             RUNDEV=1
-            break
+            BUILDTEST=1
+            shift
             ;;
         -r|--release)
             BUILD_CONFIG=Release
@@ -54,6 +63,21 @@ while [[ $# -gt 0 ]]; do
             clean
             exit 0
             ;;
+        -e|--example)
+            BUILDEXAMPLES=1
+            BUILD_OPTS="${BUILD_OPTS} -DBUILD_EXAMPLES=ON"
+            shift
+            ;;
+        -re|--run-examples)
+            BUILDEXAMPLES=1
+            RUNEXAMPLES=1
+            shift
+            ;;
+        -rt|--run-tests)
+            BUILD_TEST=1
+            RUNTEST=1
+            shift
+            ;;
         *)
             echo "Incorrect parameter: $1"
             echo ""
@@ -61,6 +85,14 @@ while [[ $# -gt 0 ]]; do
             exit 1
     esac
 done
+
+# Prepare build
+if [[ -n $BUILDTEST ]]; then
+    BUILD_OPTS="${BUILD_OPTS} -DBUILD_TESTS=ON"
+fi
+if [[ -n $BUILDEXAMPLES ]]; then
+    BUILD_OPTS="${BUILD_OPTS} -DBUILD_EXAMPLES=ON"
+fi
 
 # Always build target
 build
@@ -70,6 +102,10 @@ if [[ -n $RUNTEST ]]; then
     if [[ $? -eq 0 ]]; then
         run_test
     fi
+fi
+
+if [[ -n $RUNEXAMPLES ]]; then
+    run_examples
 fi
 
 if [[ -n $RUNDEV ]]; then

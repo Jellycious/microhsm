@@ -23,7 +23,7 @@ namespace microhsm_tests
             eMEVENT_G,
     )
 
-    HSM_CREATE_ID_LIST(e_mstates,
+    HSM_CREATE_VERTEX_LIST(e_mstates,
             eMSTATE_S = 8,
             eMSTATE_S1,
             eMSTATE_S2,
@@ -59,7 +59,7 @@ namespace microhsm_tests
     {
     public:
 
-        MacroHSM() : BaseHSM(&state_s) {};
+        MacroHSM() : BaseHSM(state_s) {};
 
         Vertex* getVertex(unsigned int ID) override;
         unsigned int getMaxID() override;

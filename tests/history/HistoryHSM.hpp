@@ -16,7 +16,7 @@ namespace microhsm_tests
             eHEVENT_C,
     )
 
-    HSM_CREATE_ID_LIST(e_hids,
+    HSM_CREATE_VERTEX_LIST(e_hids,
             eSTATE_H = 14,
             eSTATE_H_SHALLOW_HISTORY,
             eSTATE_H_DEEP_HISTORY,
@@ -42,7 +42,7 @@ namespace microhsm_tests
     class HistoryHSM : public BaseHSM
     {
         public:
-            HistoryHSM() : BaseHSM(&stateI_) {};
+            HistoryHSM() : BaseHSM(stateI_) {};
 
             Vertex* getVertex(unsigned int id) override;
             unsigned int getMaxID(void) override;

@@ -1,0 +1,31 @@
+@startuml
+skinparam state {
+  BackgroundColor #FDF6E3
+  BorderColor black
+  ArrowColor black
+}
+
+[*] --> IDLE
+
+state IDLE {
+}
+
+IDLE --> RUNNING : START
+
+state RUNNING {
+  [*] --> CLOSED
+
+  state CLOSED {
+    CLOSED: entry / ctx.close()
+  }
+
+  state OPEN {
+    OPEN: entry / ctx.open()
+  }
+
+  OPEN --> CLOSED : TICK
+  CLOSED --> OPEN : TICK [!ctx.isLocked()]
+}
+
+RUNNING --> IDLE : PAUSE / ctx.close()
+@enduml

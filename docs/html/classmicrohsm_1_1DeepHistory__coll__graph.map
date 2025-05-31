@@ -1,6 +1,0 @@
-<map id="microhsm::DeepHistory" name="microhsm::DeepHistory">
-<area shape="rect" id="node1" title="Deep history class." alt="" coords="5,249,181,276"/>
-<area shape="rect" id="node2" href="$classmicrohsm_1_1BaseHistory.html" title="History base class." alt="" coords="6,173,181,200"/>
-<area shape="rect" id="node3" href="$classmicrohsm_1_1Vertex.html" title="Vertex class used for states and pseudostates." alt="" coords="19,5,157,32"/>
-<area shape="rect" id="node4" href="$classmicrohsm_1_1BaseState.html" title="Base class for all states." alt="" coords="110,83,271,109"/>
-</map>

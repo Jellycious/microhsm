@@ -1,6 +1,6 @@
 # MicroHSM: Embedded Hierarchical State Machine (HSM) Library
 
-A simple lightweight, embedded-friendly C++ library implementing UML-compliant hierarchical
+A lightweight, but powerful embedded-friendly C++ library implementing UML-compliant hierarchical
 state machines.
 
 ---
@@ -54,26 +54,283 @@ easily understood from just looking at the code.
 
 ---
 
-## How to use
+# How to use
 
 One can define state machines in two different ways:
 
 - Option 1 - Defining states and HSMs manually.
+
 > Create your HSMs by creating your own HSMs and state classes that inherit from the
 `BaseHSM` and `BaseState` classes.
 
-- Option 2 - Defining states and HSMs through the use of macros (**recommended**)
-> Define your HSMs using a set of expressive macros. This approach offers a more concise and readable syntax, 
+- Option 2 - Defining states and HSMs through the use of macros
+
+> Define your HSMs using a set of expressive macros. This approach offers a more concise and readable syntax,
 significantly reducing boilerplate code. While it abstracts away
 some implementation details, it streamlines development and improves maintainability for most use cases.
 
-### Example
+## Vertex and Event IDs
+Every vertex and event should have a unique ID associated to it.
+```
+// Vertex IDs
+enum eValveState : unsigned int {
+    eSTATE_IDLE = 0,
+    eSTATE_RUNNING,
+    eSTATE_CLOSED,
+    eSTATE_OPEN,
+    eSTATE_COUNT
+};
+
+// Event IDs
+enum eValveEvent : unsigned int {
+    eEVENT_ANONYMOUS = 0, // Reserved event ID 0 for anonymous events
+    eEVENT_START,
+    eEVENT_TICK,
+    eEVENT_PAUSE,
+};
+```
+
+or alternatively with macros:
 
 ```
-Some code
+HSM_CREATE_VERTEX_LIST(eValveState,
+    eSTATE_IDLE,
+    eSTATE_RUNNING,
+    eSTATE_CLOSED,
+    eSTATE_OPEN,
+    eSTATE_COUNT
+)
+HSM_CREATE_EVENT_LIST(eValveEvent,
+    eEVENT_START,
+    eEVENT_PAUSE,
+    eEVENT_TICK
+)
 ```
 
+## State declarations
+```
+// Declare a top-level state
+class StateRunning : public microhsm::BaseState
+{
+    public:
+        StateRunning(microhsm::BaseState* initialState) : microhsm::BaseState(
+                eSTATE_RUNNING,     // ID of `StateRunning`
+                nullptr,            // Pointer to parent state of `StateRunning` (`nullptr` because no parent)
+                initialState)       // Pointer to initial state of `StateRunning`
+        {
+        };
 
+        bool match(unsigned int event, microhsm::sTransition* t, void* ctx) override;
+};
 
+// Declare a state with a parent
+class StateOpen : public microhsm::BaseState
+{
+    public:
+        StateOpen(StateRunning* parentState) : microhsm::BaseState(
+                eSTATE_OPEN,        // ID of `StateOpen`
+                parentState,        // Pointer to parent state of `StateOpen`
+                nullptr)            // Pointer to initial state of `StateOpen`
+        {
+        };
 
+        bool match(unsigned int event, microhsm::sTransition* t, void* ctx) override;
 
+        // Optional entry function
+        void entry(void* ctx) override;
+};
+```
+
+or alternatively with macros:
+
+```
+HSM_DECLARE_STATE_TOP_LEVEL(StateRunning, eSTATE_RUNNING)
+HSM_DECLARE_STATE(StateClosed, eSTATE_CLOSED, StateRunning,
+        HSM_DECLARE_STATE_ENTRY()
+)
+```
+
+or alternatively
+
+```
+HSM_DECLARE_STATE_TOP_LEVEL(StateRunning, eSTATE_RUNNING)
+```
+
+## HSM declaration
+
+Then we declare the HSM itself.
+
+```
+class ValveHSM : public microhsm::BaseHSM
+    {
+        public:
+            /*
+             * The constructor of `ValveHSM`
+             * provides the initial state to the `BaseHSM`.
+             */
+            ValveHSM() : microhsm::BaseHSM(state_idle) {}
+
+            /* Required functions */
+            microhsm::Vertex* getVertex(unsigned int ID) override;
+            unsigned int getMaxID(void) override;
+
+        private:
+
+            /* States */
+            StateIdle state_idle = StateIdle(nullptr);                          // Argument is the initial state (`nullptr` because state has no children)
+            StateRunning state_running = StateRunning(&state_closed);           // Argument is the initial state
+            StateOpen state_open = StateOpen(&state_running, nullptr);          // Arguments are parent state and initial state respectively
+            StateClosed state_closed = StateClosed(&state_running, nullptr);    // Arguments are parent and initial state respectively
+    };
+```
+
+## Implement required HSM functions
+
+For every HSM it is required to add two functions. These are used by the dispatcher to perform transitions.
+
+```
+// Should return the highest possible vertex ID
+unsigned int ValveHSM::getMaxID()
+{
+    // Here we simply return the highest possible ID for a state
+    return static_cast<unsigned int>(eSTATE_COUNT) - 1;
+}
+
+// Should return vertex associated to an ID
+microhsm::Vertex* ValveHSM::getVertex(unsigned int id)
+{
+    // In this case modelled as a simple switch case
+    switch(id) {
+        case eSTATE_IDLE: return &this->state_idle;
+        case eSTATE_RUNNING: return &this->state_running;
+        case eSTATE_OPEN: return &this->state_open;
+        case eSTATE_CLOSED: return &this->state_closed;
+        default: return nullptr;
+    }
+}
+```
+
+## Implement state transitions
+
+Every state requires a `match` function. The match function should match events to transitions and possibly check any guards.
+
+```
+bool StateClosed::match(unsigned int event, microhsm::sTransition* t, void* ctx)
+{
+    ValveContext* valve = static_cast<ValveContext*>(ctx);
+    // Define transition table
+    switch(event) {
+        case eEVENT_TICK:
+            // Guards must be implemented manually by checking them in the `match` function.
+            if (!valve->isLocked()) {
+                // Transition from `StateClosed` to `StateOpen`, if guard valve->canOpen succeeds.
+                return transitionExternal(eSTATE_OPEN, t, nullptr);
+            }
+            break;
+        default:
+            break;
+    }
+    return noTransition();
+}
+```
+
+or alternatively with macros:
+
+```
+HSM_DEFINE_STATE_MATCH(StateClosed)
+{
+    ValveContext* valve = static_cast<ValveContext*>(ctx);
+    // Define transition table
+    switch(event) {
+        case eEVENT_TICK:
+            // Guards must be implemented manually by checking them in the `match` function.
+            if (!valve->isLocked()) {
+                // Transition from `StateClosed` to `StateOpen`, if guard valve->canOpen succeeds.
+                return transitionExternal(eSTATE_OPEN, t, nullptr);
+            }
+            break;
+        default:
+            break;
+    }
+    return noTransition();
+}
+```
+
+---
+
+# Examples
+In `microhsm/example` you will find two examples on the same Hierarchical State Machine.
+The HSM is a model of a trickle Valve that opens and closes repeatedly. The valve can
+be locked by an external command. When this is done, it is not allowed to go to the
+open state. Furthermore, it is possible to pause the valve which will make it close itself
+and ignore commands until the next start event.
+
+![./valve.png](Valve HSM)
+
+The difference between the two implementations is that one makes use of normal C++ syntax
+while the other makes use of macros. Macros reduce boilerplate code at the cost of hiding
+implementation details. Both methods offer the same functionality, the choice is mostly stylistic.
+
+### Example Features
+
+The examples make use of the following HSM features:
+
+- State hierarchy
+- Transition effects
+- External transitions
+- Entry behavior
+- Transition guards
+- Context object
+
+### Context Object
+
+The example also shows how a context object may be passed to the HSM. One has access to this
+object in the `match`,`entry` and `exit` functions. Context objects are generally used to provide a
+communication layer between the HSM and the rest of the application. One can methods and access the
+context data during the `entry` and `exit` behaviors. In the example, this is used to open/close the valve upon
+entering the open and closed states. See the following code snippet:
+
+```
+/*
+ * One has access to the following parameters in the `entry` function:
+ *
+ * - `void* ctx`
+ */
+HSM_DEFINE_STATE_ENTRY(StateOpen)
+{
+    // We use a context object to open the valve
+    ValveContext* context = static_cast<ValveContext*>(ctx);
+    context->open();
+}
+```
+
+Another usecase is for implementing guards. It is up to the implementor
+to check guards appropriately in the `match` function of a state. In the example the HSM may only move to the
+open state if the valve is not locked. This is achieved in the following manner:
+
+```
+/*
+ * One has access to the following parameters in the `match` function:
+ *
+ * - 'unsigned int event`
+ * - `microhsm::sTransition* t`
+ * - `void* ctx`
+ */
+HSM_DEFINE_STATE_MATCH(StateClosed)
+{
+    ValveContext* valve = static_cast<ValveContext*>(ctx);
+    // Define transition table
+    switch(event) {
+        case eEVENT_TICK:
+            // We use the context object to implement a transition guard.
+            if (!valve->isLocked()) {
+                // Transition from `StateClosed` to `StateOpen`, if guard: `!valve->isLocked()` succeeds.
+                return transitionExternal(eSTATE_OPEN, t, nullptr);
+            }
+            break;
+        default:
+            break;
+    }
+    return noTransition();
+}
+```

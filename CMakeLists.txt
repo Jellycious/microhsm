@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-option(BUILD_TESTING "Build tests" ON)
+option(BUILD_TESTS "Build tests" ON)
+option(BUILD_EXAMPLES "Build examples" ON)
 
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 
@@ -37,7 +38,11 @@ add_compile_options(
     -Wsign-conversion
 )
 
-if(BUILD_TESTING)
+if(BUILD_EXAMPLES)
+    add_subdirectory(example)
+endif()
+
+if(BUILD_TESTS)
     add_compile_options(
         -DMICROHSM_CUSTOM_CONFIG # Include custom configuration file
         -I${CMAKE_CURRENT_SOURCE_DIR}/tests/
@@ -46,7 +51,7 @@ endif()
 
 add_subdirectory(src/microhsm)
 
-if(BUILD_TESTING)
+if(BUILD_TESTS)
     add_subdirectory(tests)
 
     enable_testing()

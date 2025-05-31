@@ -124,7 +124,7 @@ namespace microhsm_tests
     {
     public:
 
-        TestHSM() : BaseHSM(&state_s) {};
+        TestHSM() : BaseHSM(state_s) {};
 
         Vertex* getVertex(unsigned int ID) override;
         unsigned int getMaxID() override;
