@@ -131,7 +131,7 @@ namespace microhsm_examples {
      * - `microhsm::Vertex* getVertex(unsigned int ID)`
      * - `unsigned int getMaxID()`
      *
-     * These functions are used by the dispatcher two appropriately match 
+     * These functions are used by the dispatcher two appropriately match
      * and execute state transitions.
      *
      * `getVertex` will return a pointer to the state based upon the give id.
@@ -141,7 +141,7 @@ namespace microhsm_examples {
     {
         public:
             /*
-             * The constructor of `ValveHSM` 
+             * The constructor of `ValveHSM`
              * provides the initial state to the `BaseHSM`.
              */
             ValveHSM() : microhsm::BaseHSM(state_idle) {}
@@ -155,7 +155,7 @@ namespace microhsm_examples {
             /* States */
             StateIdle state_idle = StateIdle();
             StateRunning state_running = StateRunning(&state_closed);     // Argument is the initial state of StateRunning
-            StateOpen state_open = StateOpen(&state_running);           // Argument is the parent state of StateOpen 
+            StateOpen state_open = StateOpen(&state_running);           // Argument is the parent state of StateOpen
             StateClosed state_closed = StateClosed(&state_running);     // Argument is the parent state of StateOpen
     };
 

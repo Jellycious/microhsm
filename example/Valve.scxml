@@ -3,15 +3,15 @@
     <state id="IDLE">
         <qt:editorinfo scenegeometry="413.92;35.88;353.92;-14.12;659.52;100" geometry="413.92;35.88;-60;-50;659.52;100"/>
         <transition type="external" event="START" target="VALVE">
-            <qt:editorinfo endTargetFactors="16.04;3.56" startTargetFactors="16.88;87.81" movePoint="-31.57;10.01"/>
+            <qt:editorinfo startTargetFactors="16.88;87.81" endTargetFactors="16.04;3.56" movePoint="-31.57;10.01"/>
         </transition>
     </state>
     <state id="VALVE">
         <qt:editorinfo scenegeometry="413.92;284.19;353.92;234.19;659.52;501.94" geometry="413.92;284.19;-60;-50;659.52;501.94"/>
         <state id="CLOSED">
             <qt:editorinfo scenegeometry="419.36;393.85;414.85;393.85;183.88;226.60" geometry="5.44;109.66;-4.51;0;183.88;226.60"/>
-            <transition type="external" event="TICK" target="OPEN" cond="ctx.can_open();">
-                <qt:editorinfo endTargetFactors="5.90;31.94" movePointCond="-33.82;1.02" startTargetFactors="92.83;35.03" movePoint="-66.61;1.02"/>
+            <transition type="external" event="TICK" target="OPEN" cond="!ctx.isLocked();">
+                <qt:editorinfo movePointCond="-33.82;1.02" startTargetFactors="92.83;35.03" endTargetFactors="5.90;31.94" movePoint="-66.61;1.02"/>
             </transition>
             <onentry>
                 <script>ctx.close();</script>
@@ -20,14 +20,14 @@
         <state id="OPEN">
             <qt:editorinfo scenegeometry="785.74;399.79;781.23;399.79;183.88;226.60" geometry="371.82;115.60;-4.51;0;183.88;226.60"/>
             <transition type="external" event="TICK" target="CLOSED">
-                <qt:editorinfo endTargetFactors="93.83;75.61" startTargetFactors="5.40;71.99" movePoint="78.91;2.05"/>
+                <qt:editorinfo startTargetFactors="5.40;71.99" endTargetFactors="93.83;75.61" movePoint="78.91;2.05"/>
             </transition>
             <onentry>
                 <script>ctx.open();</script>
             </onentry>
         </state>
         <transition type="external" event="PAUSE" target="IDLE">
-            <qt:editorinfo endTargetFactors="79.53;84.78" startTargetFactors="78.85;2.84" movePoint="41.58;10.01"/>
+            <qt:editorinfo startTargetFactors="78.85;2.84" endTargetFactors="79.53;84.78" movePoint="41.58;10.01"/>
             <script>ctx.close();</script>
         </transition>
     </state>
