@@ -33,7 +33,8 @@ namespace microhsm
     {
 #if MICROHSM_ASSERTIONS == 1
         // `newState` must be 'leaf' state
-        MICROHSM_ASSERT(newState->isComposite() == false);
+        bool isComposite = newState->isComposite();
+        MICROHSM_ASSERT(isComposite == false);
 #endif
         // Set histories
         BaseState* s = newState;
@@ -219,7 +220,7 @@ namespace microhsm
         BaseState* lca = this->findLCA_(source, target);
 
         // 4. Bubble up to LCA
-        s = exitUntilTarget_(source, lca, ctx);
+        exitUntilTarget_(source, lca, ctx);
 
         // 5. Handle exit of source (local v.s. external)
         if(t->kind == eKIND_EXTERNAL && lca == source) exitState_(lca, ctx);
@@ -266,7 +267,7 @@ namespace microhsm
         }
     }
 
-    BaseState* BaseHSM::exitUntilTarget_(BaseState* startState, BaseState* target, void* ctx)
+    BaseState* BaseHSM::exitUntilTarget_(BaseState* startState, const BaseState* target, void* ctx)
     {
         BaseState* s = startState;
         while (s != nullptr) {
@@ -277,7 +278,7 @@ namespace microhsm
         return s;
     }
 
-    BaseState* BaseHSM::enterUntilTarget_(BaseState* start, BaseState* target, void* ctx)
+    BaseState* BaseHSM::enterUntilTarget_(const BaseState* start, BaseState* target, void* ctx)
     {
         // Edge case where we are already in the target
         if (start == target) return target;

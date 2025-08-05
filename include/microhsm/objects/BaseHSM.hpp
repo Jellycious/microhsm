@@ -166,7 +166,7 @@ namespace microhsm
              * @param ctx Context object
              * @return Pointer to state if found, otherwise `nullptr`
              */
-            BaseState* exitUntilTarget_(BaseState* start, BaseState* target, void* ctx);
+            BaseState* exitUntilTarget_(BaseState* start, const BaseState* target, void* ctx);
 
             /**
              * @brief Perform entry effects until `target` (including)
@@ -176,7 +176,7 @@ namespace microhsm
              * @param Context object
              * @return `targetState` if successfull, `nullptr` otherwise. 
              */
-            BaseState* enterUntilTarget_(BaseState* startState, BaseState* targetState, void* ctx);
+            BaseState* enterUntilTarget_(const BaseState* startState, BaseState* targetState, void* ctx);
 
             /**
              * @brief Enter a statertementen geldt vaak een VvE-reglement waarin be

@@ -55,7 +55,8 @@ namespace microhsm
     {
 #if MICROHSM_ASSERTIONS == 1
         if (initial != nullptr) {
-            MICROHSM_ASSERT(initial->isDescendentOf(this->ID));
+            bool isDescendant = initial->isDescendentOf(this->ID);
+            MICROHSM_ASSERT(isDescendant);
         }
 #endif
 
@@ -137,7 +138,8 @@ namespace microhsm
         // UML V2.5.1: For local transitions source and target vertex must be different
         MICROHSM_ASSERT(this->ID != target_ID);
         // UML V2.5.1: Local transition source state must be composite
-        MICROHSM_ASSERT(this->isComposite());
+        bool isComposite = this->isComposite();
+        MICROHSM_ASSERT(isComposite);
 #endif
 
         t->sourceID = ID;

@@ -79,7 +79,7 @@ namespace microhsm_examples {
     class StateRunning : public microhsm::BaseState
     {
         public:
-            StateRunning(microhsm::BaseState* initialState) : microhsm::BaseState(
+            explicit StateRunning(microhsm::BaseState* initialState) : microhsm::BaseState(
                     eSTATE_RUNNING,     // ID of `StateRunning`
                     nullptr,            // Pointer to parent state of `StateRunning`
                     initialState)       // Pointer to initial state of `StateRunning`
@@ -92,7 +92,7 @@ namespace microhsm_examples {
     class StateOpen : public microhsm::BaseState
     {
         public:
-            StateOpen(StateRunning* parentState) : microhsm::BaseState(
+            explicit StateOpen(StateRunning* parentState) : microhsm::BaseState(
                     eSTATE_OPEN,        // ID of `StateOpen`
                     parentState,        // Pointer to parent state of `StateOpen`
                     nullptr)            // Pointer to initial state of `StateOpen`
@@ -108,7 +108,7 @@ namespace microhsm_examples {
     class StateClosed : public microhsm::BaseState
     {
         public:
-            StateClosed(StateRunning* parentState): microhsm::BaseState(
+            explicit StateClosed(StateRunning* parentState): microhsm::BaseState(
                     eSTATE_CLOSED,      // ID of `StateClosed`
                     parentState,        // Pointer to parent state of `StateClosed`
                     nullptr)            // Pointer to initial state of `StateClosed`

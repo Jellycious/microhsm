@@ -92,7 +92,7 @@ namespace microhsm
              * @brief Deep history constructor
              * @param id Unique ID of deep history node
              */
-            DeepHistory(unsigned int id);
+            explicit DeepHistory(unsigned int id);
             /**
              * @brief Deep history constructor
              * @param id Unique ID of deep history node
@@ -126,7 +126,7 @@ namespace microhsm
              * @brief Shallow history constructor
              * @param id Unique ID of deep history node
              */
-            ShallowHistory(unsigned int id);
+            explicit ShallowHistory(unsigned int id);
             /**
              * @brief Shallow history constructor
              * @param id Unique ID of deep history node

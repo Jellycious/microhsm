@@ -51,8 +51,9 @@ namespace microhsm
         BaseState* s = (defaultHistory_ == nullptr) ? parent->initial : defaultHistory_;
 
 #if MICROHSM_ASSERTIONS == 1
-        MICROHSM_ASSERT(s->isDescendentOf(parent->ID)); // Default history must be descendent of parent
+        bool isDescendentOfParent = s->isDescendentOf(parent->ID);
         MICROHSM_ASSERT(s != nullptr);                  // Parent must be a composite state with initial state set
+        MICROHSM_ASSERT(isDescendentOfParent);          // Default history must be descendent of parent
 #endif
 
         // Walk down parents initial states until leave state is reached
@@ -79,8 +80,9 @@ namespace microhsm
         BaseState* s = (defaultHistory_ == nullptr) ? parent->initial : defaultHistory_;
 
 #if MICROHSM_ASSERTIONS == 1
-        MICROHSM_ASSERT(s->isDescendentOf(parent->ID)); // Default history must be descendent of parent
+        bool isDescendentOfParent = s->isDescendentOf(parent->ID);
         MICROHSM_ASSERT(s != nullptr);                  // Parent must be a composite state with initial state set
+        MICROHSM_ASSERT(isDescendentOfParent);          // Default history must be descendent of parent
 #endif
 
         // Set history state

@@ -66,14 +66,14 @@ namespace microhsm_tests
     class StateS : public TestState
     {
         public:
-            StateS(BaseState* initialState) : TestState(eSTATE_S, nullptr, initialState) {};
+            explicit StateS(BaseState* initialState) : TestState(eSTATE_S, nullptr, initialState) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
     };
 
     class StateS1 : public TestState
     {
         public:
-            StateS1(StateS* parentState) : TestState(eSTATE_S1, parentState, nullptr) {};
+            explicit StateS1(StateS* parentState) : TestState(eSTATE_S1, parentState, nullptr) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
     };
 
@@ -87,14 +87,14 @@ namespace microhsm_tests
     class StateS21 : public TestState
     {
         public:
-            StateS21(StateS2* parentState) : TestState(eSTATE_S21, parentState, nullptr) {};
+            explicit StateS21(StateS2* parentState) : TestState(eSTATE_S21, parentState, nullptr) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
     };
 
     class StateS22 : public TestState
     {
         public:
-            StateS22(StateS2* parentState) : TestState(eSTATE_S22, parentState, nullptr) {};
+            explicit StateS22(StateS2* parentState) : TestState(eSTATE_S22, parentState, nullptr) {};
             bool match(unsigned int event, sTransition* t, void* ctx) override;
     };
 
