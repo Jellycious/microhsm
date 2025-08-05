@@ -20,7 +20,7 @@ state machines.
 - **No use of dynamic memory** - Static memory only
 - **No use of C++ standard library** - Ideal for bare-metal
 - **Build as static libary or include directly** - Integrate in any project
-- **Lightweight** - Library consists of less than 750 lines of code
+- **Lightweight** - Core library consists of less than 300 lines of code
 
 ---
 

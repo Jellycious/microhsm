@@ -15,19 +15,20 @@
 
 /* Assertions */
 #ifndef MICROHSM_ASSERTIONS
-    // Enable assertions by default
-    #define MICROHSM_ASSERTIONS 1
+    // Disable assertions by default
+    #define MICROHSM_ASSERTIONS 0
 #endif
 
 #if MICROHSM_ASSERTIONS == 1
+    /*
+     * Assertions enabled.
+     *
+     * Provide an assertion hook `MICROHSM_ASSERT(expr)`
+     * The assertion should evaluate the expression `expr` and
+     * prevent further execution if `expr` evaluates to zero.
+     */
     #ifndef MICROHSM_ASSERT
-        // Define assertion handler if no assertion handler is specified
-        #include <assert.h>
-        /**
-         * @brief Assertion handler
-         * @param expr Expression to evaluate
-         */
-        #define MICROHSM_ASSERT(expr) assert(expr)
+        #error Assertions enabled, but no assertion hook provided
     #endif
 #endif
 
@@ -38,68 +39,34 @@
 
 #if MICROHSM_TRACING == 1
 
-    #ifndef MICROHSM_TRACE_STATE_NAME
-        /**
-         * @brief Convert state ID to string
-         * @param id State ID
-         * @return String of state ID
-         */
-        #define MICROHSM_TRACE_STATE_NAME(id) id
-    #endif
-
-    #ifndef MICROHSM_TRACE_EVENT_NAME
-        /**
-         * @brief Convert event ID to string
-         * @param event Event ID
-         * @return String of event ID
-         */
-        #define MICROHSM_TRACE_EVENT_NAME(event) event
-    #endif
+    /*
+     * Tracing enabled.
+     *
+     * Tracing is used to trace a path during event dispatches.
+     * The hooks will be called during specific moments when
+     * transitioning between states.
+     *
+     * The following hooks must be provided by the user:
+     * `MICROHSM_TRACE_ENTRY(id)` - Called upon entry of state with ID `id`
+     * `MICROHSM_TRACE_EXIT(id)` - Called upon exit of state with ID `id`
+     * `MICROHSM_TRACE_DISPATCH_IGNORED(event)` - Called when `event` did not match any transition
+     * `MICROHSM_TRACE_DISPATCH_MATCHED(event, id)` - Called when `event` matched transition from state with ID `id`
+     */
 
     #ifndef MICROHSM_TRACE_ENTRY
-        #include <iostream>
-        /**
-         * @brief Called when perform entry behavior of state
-         * @param id State ID
-         */
-        #define MICROHSM_TRACE_ENTRY(id) std::cout << "ENTRY," << MICROHSM_TRACE_STATE_NAME(id) << std::endl
+        #error Tracing enabled, but no MICROHSM_TRACE_ENTRY hook provided
     #endif
 
     #ifndef MICROHSM_TRACE_EXIT
-        #include <iostream>
-        /**
-         * @brief Called when perform exit behavior of state
-         * @param id State ID
-         */
-        #define MICROHSM_TRACE_EXIT(id) std::cout << "EXIT," << MICROHSM_TRACE_STATE_NAME(id) << std::endl
+        #error Tracing enabled, but no MICROHSM_TRACE_EXIT hook provided
     #endif
 
     #ifndef MICROHSM_TRACE_DISPATCH_IGNORED
-        #include <iostream>
-        /**
-         * @brief Called when an event did not match any transitions
-         * @param event Event ID
-         */
-        #define MICROHSM_TRACE_DISPATCH_IGNORED(event) std::cout << "IGNORED," << MICROHSM_TRACE_EVENT_NAME(event) << std::endl
+        #error Tracing enabled, but no MICROHSM_TRACE_DISPATCH_IGNORED hook provided
     #endif
 
     #ifndef MICROHSM_TRACE_DISPATCH_MATCHED
-        #include <iostream>
-        /**
-         * @brief Called when an event matched a transition on a state
-         * @param event Event ID
-         * @param id State ID
-         */
-        #define MICROHSM_TRACE_DISPATCH_MATCHED(event, id) std::cout << "MATCH," << MICROHSM_TRACE_EVENT_NAME(event) << "," << MICROHSM_TRACE_STATE_NAME(id) << std::endl
-    #endif
-
-    #ifndef MICROHSM_TRACE_MESSAGE
-        #include <iostream>
-        /**
-         * @brief Use to send a random trace message
-         * @param msg Message string
-         */
-        #define MICROHSM_TRACE_MESSAGE(msg) std::cout << "MESSAGE," << msg<< std::endl;
+        #error Tracing enabled, but no MICROHSM_TRACE_DISPATCH_MATCHED hook provided
     #endif
 #endif
 

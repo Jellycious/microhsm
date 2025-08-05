@@ -9,13 +9,9 @@ namespace microhsm_tests {
 
     void setup()
     {
-#if MICROHSM_TRACING == 1
-        MICROHSM_TRACE_MESSAGE("Initializing history test HSM")
-#endif
+        MICROHSM_TEST_MESSAGE("Initializing history test HSM")
         historyHSM.init(nullptr);
-#if MICROHSM_TRACING == 1
-        MICROHSM_TRACE_MESSAGE("Initialized")
-#endif
+        MICROHSM_TEST_MESSAGE("Initialized")
 
     }
 

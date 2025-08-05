@@ -1,8 +1,20 @@
 #ifndef MICROHSM_TESTS_CUSTOM_CONFIG
 #define MICROHSM_TESTS_CUSTOM_CONFIG
 
+
+// Enable assertions
+#define MICROHSM_ASSERTIONS 1
+
+#include <assert.h>
+
+// Provide assertion hook
+#define MICROHSM_ASSERT(expr) assert(expr)
+
+
 // Enable tracing
 #define MICROHSM_TRACING 1
+
+#include <iostream>
 
 inline const char* get_event_name_(unsigned int event)
 {
@@ -85,14 +97,12 @@ inline const char* get_state_name_(unsigned int state)
 
 }
 
+// Define tracing hooks
+#define MICROHSM_TRACE_ENTRY(id) std::cout << "ENTRY," << get_state_name_(id) << std::endl
+#define MICROHSM_TRACE_EXIT(id) std::cout << "EXIT," << get_state_name_(id) << std::endl
+#define MICROHSM_TRACE_DISPATCH_IGNORED(event) std::cout << "IGNORED," << get_event_name_(event) << std::endl
+#define MICROHSM_TRACE_DISPATCH_MATCHED(event, id) std::cout << "MATCH," << get_event_name_(event) << "," << get_state_name_(id) << std::endl
 
-/**
- * @brief Convert event ID to string
- * @param event Event ID
- * @return String of event ID
- */
-#define MICROHSM_TRACE_EVENT_NAME(event) get_event_name_(event)
-
-#define MICROHSM_TRACE_STATE_NAME(state_id) get_state_name_(state_id)
+#define MICROHSM_TEST_MESSAGE(msg) std::cout << "MESSAGE," << msg << std::endl;
 
 #endif

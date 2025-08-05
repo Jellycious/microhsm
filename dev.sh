@@ -13,13 +13,14 @@ USAGE_MSG="USAGE: ./dev.sh [OPTIONS]
 DESCRIPTION: Utility script that eases development
 
 OPTIONS:
-    -r, --release       = Release build
-    -t, --test          = Build tests
-    -c, --clean         = Clean before building
-    -e, --example       = Build examples
-    -d, --dev           = Start dev server (rebuilds and tests upon code changes)
-    -re, --run-examples = Run examples
-    -rt, --run-tests    = Run tests
+    -r, --release           = Release build
+    -t, --test              = Build tests
+    -c, --clean             = Clean before building
+    -e, --example           = Build examples
+    -d, --dev               = Start dev server (rebuilds and tests upon code changes)
+    -re, --run-examples     = Run examples
+    -rt, --run-tests        = Run tests
+    -pc, --print-coverage   = Print coverage info (requires code to be build with coverage enabled)
 "
 
 
@@ -76,6 +77,9 @@ while [[ $# -gt 0 ]]; do
         -rt|--run-tests)
             BUILD_TEST=1
             RUNTEST=1
+            shift;;
+        -pc|--print-coverage)
+            PRINT_COVERAGE=1
             shift
             ;;
         *)
@@ -106,6 +110,10 @@ fi
 
 if [[ -n $RUNEXAMPLES ]]; then
     run_examples
+fi
+
+if [[ -n $PRINT_COVERAGE ]]; then
+    gcovr -r ${ROOT_DIR}/src ${ROOT_DIR}
 fi
 
 if [[ -n $RUNDEV ]]; then

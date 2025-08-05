@@ -14,14 +14,10 @@ namespace microhsm_tests
     /* Private functions */
     void setupTest()
     {
-#if MICROHSM_TRACING == 1
-        MICROHSM_TRACE_MESSAGE("Initializing regular test HSM")
-#endif
+        MICROHSM_TEST_MESSAGE("Initializing regular test HSM")
         testCTX.init();
         testHSM.init(static_cast<void*>(&testCTX));
-#if MICROHSM_TRACING == 1
-        MICROHSM_TRACE_MESSAGE("Initialized")
-#endif
+        MICROHSM_TEST_MESSAGE("Initialized")
     }
 
     void test_initial_configuration()

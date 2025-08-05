@@ -1,3 +1,4 @@
+#include "microhsm_config.hpp"
 #include <unity.h>
 
 #include <context/TestCTX.hpp>
@@ -12,14 +13,10 @@ namespace microhsm_tests
 
     void testSetup()
     {
-#if MICROHSM_TRACING == 1
-        MICROHSM_TRACE_MESSAGE("Initializing macro test HSM")
-#endif
+        MICROHSM_TEST_MESSAGE("Initializing macro test HSM")
         testCTX.init();
         macroHSM.init(static_cast<void*>(&testCTX));
-#if MICROHSM_TRACING == 1
-        MICROHSM_TRACE_MESSAGE("Initialized")
-#endif
+        MICROHSM_TEST_MESSAGE("Initialized")
     }
 
     void mtest_initial_configuration()
