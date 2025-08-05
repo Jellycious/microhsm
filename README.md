@@ -58,16 +58,16 @@ easily understood from just looking at the code.
 
 One can define state machines in two different ways:
 
-- Option 1 - Defining states and HSMs manually.
+- Option 1 - Defining states and HSMs manually:
 
 > Create your HSMs by creating your own HSMs and state classes that inherit from the
-`BaseHSM` and `BaseState` classes.
+> `BaseHSM` and `BaseState` classes.
 
-- Option 2 - Defining states and HSMs through the use of macros
+- Option 2 - Defining states and HSMs through the use of macros (recommended):
 
 > Define your HSMs using a set of expressive macros. This approach offers a more concise and readable syntax,
-significantly reducing boilerplate code. While it abstracts away
-some implementation details, it streamlines development and improves maintainability for most use cases.
+> significantly reducing boilerplate code. While it abstracts away
+> some implementation details, it streamlines development and improves maintainability for most use cases.
 
 ## Vertex and Event IDs
 Every vertex and event should have a unique ID associated to it.
@@ -234,7 +234,7 @@ bool StateClosed::match(unsigned int event, microhsm::sTransition* t, void* ctx)
 }
 ```
 
-or alternatively with macros:
+The match function can also be implemented using a macro:
 
 ```
 HSM_DEFINE_STATE_MATCH(StateClosed)
@@ -318,6 +318,7 @@ open state if the valve is not locked. This is achieved in the following manner:
  */
 HSM_DEFINE_STATE_MATCH(StateClosed)
 {
+    // We obtain the context object
     ValveContext* valve = static_cast<ValveContext*>(ctx);
     // Define transition table
     switch(event) {
@@ -331,6 +332,7 @@ HSM_DEFINE_STATE_MATCH(StateClosed)
         default:
             break;
     }
+    // We return `noTransitions` in case we did not match an event
     return noTransition();
 }
 ```
