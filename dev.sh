@@ -79,6 +79,7 @@ while [[ $# -gt 0 ]]; do
             RUNTEST=1
             shift;;
         -pc|--print-coverage)
+            BUILD_TEST=1
             PRINT_COVERAGE=1
             shift
             ;;
@@ -92,10 +93,13 @@ done
 
 # Prepare build
 if [[ -n $BUILDTEST ]]; then
-    BUILD_OPTS="${BUILD_OPTS} -DBUILD_TESTS=ON"
+    BUILD_OPTS="${BUILD_OPTS} -DMICROHSM_BUILD_TESTS=ON"
 fi
 if [[ -n $BUILDEXAMPLES ]]; then
-    BUILD_OPTS="${BUILD_OPTS} -DBUILD_EXAMPLES=ON"
+    BUILD_OPTS="${BUILD_OPTS} -DMICROHSM_BUILD_EXAMPLES=ON"
+fi
+if [[ -n $PRINT_COVERAGE ]]; then
+    BUILD_OPTS="${BUILD_OPTS} -DMICROHSM_CODE_COVERAGE=ON"
 fi
 
 # Always build target

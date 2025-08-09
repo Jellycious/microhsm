@@ -2,6 +2,15 @@
 
 A lightweight, but powerful embedded-friendly C++ library implementing UML-compliant hierarchical
 state machines.
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Hierarchical State Machines](#hierarchical-state-machines)
+- [Including microhsm in your project](#including-microhsm-into-your-project)
+- [How to create and use MicroHSM](#how-to-create-and-use-microhsm)
+- [Examples](#examples)
 
 ---
 
@@ -21,6 +30,7 @@ state machines.
 - **No use of C++ standard library** - Ideal for bare-metal
 - **Build as static libary or include directly** - Integrate in any project
 - **Lightweight** - Core library consists of less than 300 lines of code
+- **Zero dependencies** - Library is fully self-contained and does not rely on external libraries
 
 ---
 
@@ -32,7 +42,7 @@ In an HSM, states can be organized in a tree-like structure where a superstate c
 contain one or more substates. This enables powerful reuse of behavior,
 reduces redundancy, and simplifies complex state models.
 
-HSMs follow formal semantics defined by the UML (Unified Modeling Language) State Machine specification, 
+HSMs follow formal semantics defined by the UML (Unified Modeling Language) State Machine specification,
 supporting features like:
 
 - Inheritance of behavior through superstates
@@ -54,7 +64,72 @@ easily understood from just looking at the code.
 
 ---
 
-# How to use
+# Including microhsm into your project
+
+1. Clone the library into your preferred directory:
+- `cd myproject/thirdparty/`
+- `git clone <TODO:replace with project github link>`
+
+2. Include microhsm directory and link to it:
+- In your CMakeLists.txt file:
+```
+add_subdirectory(myproject/thirdparty/microhsm)
+
+target_link_libraries(myproject PRIVATE microhsm)
+```
+
+3. (Optional) Include custom configuration:
+- Create microhsm\_config.hpp header file:
+```
+// file: 'myconfig/microhsm_config.hpp'
+
+// Enable assertions and provide hook
+#define MICROHSM_ASSERTIONS 1
+
+#include <assert.h>
+#define MICROHSM_ASSERT(expr) assert(expr)
+```
+- Include header file in your CMakeLists.txt
+```
+// Tell microhsm to compile with custom config
+add_compile_options(
+    -DMICROHSM_CUSTOM_CONFIG
+)
+
+// Add header file to microhsm target
+target_include_directories(microhsm PRIVATE
+    myproject/myconfig
+)
+```
+
+
+## Custom configuration options (microhsm\_config.hpp)
+
+### MICROHSM\_ASSERTIONS
+
+When set `MICROHSM_ASSERTIONS` is defined to be `1` microhsm will verify certain conditions regarding the HSM
+structure. It will also do additional checks during event dispatching
+
+To asser the user has to provide its own `MICROHSM_ASSERT(expr)` hook. This
+hook gets called with expressions which require asserting. If an expr evaluates
+to false, there is an critical issue.
+
+### MICROHSM\_TRACING
+
+When set to `MICROHSM_TRACING` is defined to be `1` microhsm will call special hooks during the event dispatching.
+This can be used to verify and debug you HSMs. One has to provide several hooks
+that will be called during event matching and taking of transitions.
+
+The hooks that should be implemented are
+
+- `MICROHSM_TRACE_ENTRY(id)` - Called upon entering a state
+- `MICROHSM_TRACE_EXIT(id)` - Called upon exiting a state
+- `MICROHSM_TRACE_DISPATCH_IGNORED(event)` - Called when an event was ignored by HSM
+- `MICROHSM_TRACE_DISPATCH_MATCHED(event, id)` - Called when an event matched a transition on a state
+
+---
+
+# How to create and use MicroHSM
 
 One can define state machines in two different ways:
 
@@ -68,6 +143,8 @@ One can define state machines in two different ways:
 > Define your HSMs using a set of expressive macros. This approach offers a more concise and readable syntax,
 > significantly reducing boilerplate code. While it abstracts away
 > some implementation details, it streamlines development and improves maintainability for most use cases.
+
+The next examples will show both methods respectively.
 
 ## Vertex and Event IDs
 Every vertex and event should have a unique ID associated to it.
@@ -177,10 +254,10 @@ class ValveHSM : public microhsm::BaseHSM
         private:
 
             /* States */
-            StateIdle state_idle = StateIdle(nullptr);                          // Argument is the initial state (`nullptr` because state has no children)
-            StateRunning state_running = StateRunning(&state_closed);           // Argument is the initial state
-            StateOpen state_open = StateOpen(&state_running, nullptr);          // Arguments are parent state and initial state respectively
-            StateClosed state_closed = StateClosed(&state_running, nullptr);    // Arguments are parent and initial state respectively
+            StateIdle state_idle = StateIdle(nullptr);                          // Constructor argument is the initial state (`nullptr` here, because state has no children)
+            StateRunning state_running = StateRunning(&state_closed);           // Constructor argument is the initial state
+            StateOpen state_open = StateOpen(&state_running, nullptr);          // Constructor arguments are parent state and initial state respectively
+            StateClosed state_closed = StateClosed(&state_running, nullptr);    // Constructor arguments are parent and initial state respectively
     };
 ```
 
@@ -213,6 +290,15 @@ microhsm::Vertex* ValveHSM::getVertex(unsigned int id)
 ## Implement state transitions
 
 Every state requires a `match` function. The match function should match events to transitions and possibly check any guards.
+If a `match` function returns `false` then the event has not matched a transition, if the `match` function has returned `true`,
+then a transition was matchd and the transition object `t` must be evaluated by the dispatcher.
+
+In the `match` function you can make use of the following functions:
+
+- `noTransition()`: No transition matched (simply returns `false`)
+- `transitionExternal(targetID, transition, effect)`: External transition matched
+- `transitionLocal(targetID, transition, effect)`: Local transition matched
+- `transitionInternal(targetID, transition, effect)`: Internal transition matched
 
 ```
 bool StateClosed::match(unsigned int event, microhsm::sTransition* t, void* ctx)
@@ -256,20 +342,38 @@ HSM_DEFINE_STATE_MATCH(StateClosed)
 }
 ```
 
+## Last step: initializing HSM and dispatching events
+
+```
+// Initialize HSM
+ValveCTX ctx = ValveCTX(); // An context object
+ValveHSM hsm = ValveHSM();
+// Dispatch event to HSM
+microhsm::eStatus s = hsm.dispatch(eEVENT_TICK, static_cast<void*>(ctx));
+/*
+* `s` can be three possible values
+* `eOK`                 - event matched and transition taken
+* `eEVENT_IGNORED`      - event not matched and ignored
+* `eTRANSITION_ERROR`   - critical error
+*/
+assert(s != eTRANSITION_ERROR);
+```
+
 ---
 
 # Examples
-In `microhsm/example` you will find two examples on the same Hierarchical State Machine.
+In `microhsm/example` you will an example of a Hierarchical State Machine.
 The HSM is a model of a trickle Valve that opens and closes repeatedly. The valve can
 be locked by an external command. When this is done, it is not allowed to go to the
 open state. Furthermore, it is possible to pause the valve which will make it close itself
 and ignore commands until the next start event.
 
-![./valve.png](Valve HSM)
+![Valve HSM](./example/valve.png)
 
-The difference between the two implementations is that one makes use of normal C++ syntax
-while the other makes use of macros. Macros reduce boilerplate code at the cost of hiding
-implementation details. Both methods offer the same functionality, the choice is mostly stylistic.
+The example contains do different implementations of the same HSM. One implementation makes use of
+regular C++ syntax, while the other implementation makes heavy use of macros.
+Using macros reduce boilerplate code at the cost of hiding implementation details.
+Both methods offer the same expressiveness. The choice is mostly personal preference.
 
 ### Example Features
 
@@ -284,23 +388,29 @@ The examples make use of the following HSM features:
 
 ### Context Object
 
-The example also shows how a context object may be passed to the HSM. One has access to this
-object in the `match`,`entry` and `exit` functions. Context objects are generally used to provide a
+The example also shows how a context object may be passed to the HSM. The libary has no knowledge
+of the context object and simply passes it to user-defined functions as a void pointer.
+One has access to this object in the `match`,`entry` and `exit` functions. Context objects are generally used to provide a
 communication layer between the HSM and the rest of the application. One can methods and access the
 context data during the `entry` and `exit` behaviors. In the example, this is used to open/close the valve upon
-entering the open and closed states. See the following code snippet:
+entering the open and closed states.
+
+See the following code snippet:
 
 ```
 /*
  * One has access to the following parameters in the `entry` function:
- *
- * - `void* ctx`
+ * - `void* ctx`: The context object
  */
 HSM_DEFINE_STATE_ENTRY(StateOpen)
 {
     // We use a context object to open the valve
     ValveContext* context = static_cast<ValveContext*>(ctx);
     context->open();
+}
+HSM_DEFINE_STATE_EXIT(StateOpen)
+{
+    // Similar to state enty, but for state exit
 }
 ```
 
@@ -312,9 +422,9 @@ open state if the valve is not locked. This is achieved in the following manner:
 /*
  * One has access to the following parameters in the `match` function:
  *
- * - 'unsigned int event`
- * - `microhsm::sTransition* t`
- * - `void* ctx`
+ * - 'unsigned int event`: Event that needs to be matched against transitions
+ * - `microhsm::sTransition* t`: Transition object (modified to reflect type of transition)
+ * - `void* ctx`: Context object
  */
 HSM_DEFINE_STATE_MATCH(StateClosed)
 {
@@ -336,3 +446,30 @@ HSM_DEFINE_STATE_MATCH(StateClosed)
     return noTransition();
 }
 ```
+
+A little trick is to use non-capturing lamdbdas and pass this to a transition as the effect function.
+This allows you to combine multiple actions into a single effect. The reason to use non-capturing lambdas
+is that this prevents any dynamically memory from being allocated, making it embedded-friendly.
+
+```
+HSM_DEFINE_STATE_MATCH(SomeState) {
+
+    auto combinedEffect = [](void* ctx) {
+        ValveCTX* ctx = static_cast<ValveCTX*>(ctx);
+        ctx->effect1();
+        ctx->effect2();
+    };
+
+    switch(event) {
+        case eEVENT_TICK:
+            // When this transition is taken `ValveCTX::effect1` and `ValveCTX::effect2` will be called in order.
+            return transitionExternal(eSOME_STATE, t, combinedEffect);
+        default:
+            break;
+    }
+
+    return noTransition();
+}
+```
+
+

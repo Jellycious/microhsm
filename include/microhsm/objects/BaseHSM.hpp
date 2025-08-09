@@ -117,7 +117,7 @@ namespace microhsm
             virtual void init_(void* ctx) {(void)ctx;};
 
             /// @brief Current active state (always a leaf state)
-            BaseState* curState;
+            BaseState* curState; //TODO: Can be made a reference?
 
             /// @brief Initial state
             BaseState& initState;

@@ -25,10 +25,4 @@ namespace microhsm_tests
                 context->flag_ = false;
             }
 
-            bool TestCTX::guardFlag(void* ctx)
-            {
-                TestCTX* context = static_cast<TestCTX*>(ctx);
-                return context->flag_;
-            }
-
 }

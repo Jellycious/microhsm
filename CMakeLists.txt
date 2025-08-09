@@ -6,10 +6,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-option(BUILD_TESTS "Build tests" ON)
-option(BUILD_EXAMPLES "Build examples" ON)
+option(MICROHSM_BUILD_TESTS "Build tests" OFF)
+option(MICROHSM_BUILD_EXAMPLES "Build examples " OFF)
+option(MICROHSM_CODE_COVERAGE "Enable coverage reporting " OFF)
 
-option(CODE_COVERAGE "Enable coverage reporting" ON)
+message("MICROHSM_BUILD_TESTS=" ${MICROHSM_BUILD_TESTS})
+message("MICROHSM_BUILD_EXAMPLES=" ${MICROHSM_BUILD_EXAMPLES})
+message("MICROHSM_CODE_COVERAGE=" ${MICROHSM_CODE_COVERAGE})
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -20,7 +23,7 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 endif()
 
 
-if(CODE_COVERAGE)
+if(MICROHSM_CODE_COVERAGE)
     if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
         message(STATUS "Code coverage enabled")
         add_compile_options(--coverage)
@@ -38,11 +41,13 @@ add_compile_options(
     -Wsign-conversion
 )
 
-if(BUILD_EXAMPLES)
+if(MICROHSM_BUILD_EXAMPLES)
+    message(STATUS "Examples included")
     add_subdirectory(example)
 endif()
 
-if(BUILD_TESTS)
+if(MICROHSM_BUILD_TESTS)
+    message(STATUS "Tests included")
     add_compile_options(
         -DMICROHSM_CUSTOM_CONFIG # Include custom configuration file
         -I${CMAKE_CURRENT_SOURCE_DIR}/tests/
@@ -51,7 +56,7 @@ endif()
 
 add_subdirectory(src/microhsm)
 
-if(BUILD_TESTS)
+if(MICROHSM_BUILD_TESTS)
     add_subdirectory(tests)
 
     enable_testing()

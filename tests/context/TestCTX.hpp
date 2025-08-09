@@ -11,7 +11,6 @@ namespace microhsm_tests
 
             static void setFlag(void* ctx);
             static void clearFlag(void* ctx);
-            static bool guardFlag(void* ctx);
 
             unsigned int getFlag();
 
