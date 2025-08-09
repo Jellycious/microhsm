@@ -1,7 +1,10 @@
 # MicroHSM: Embedded Hierarchical State Machine (HSM) Library
 
+![MicroHSM](./docs/img/microhsm_banner.png)
+
 A lightweight, but powerful embedded-friendly C++ library implementing UML-compliant hierarchical
 state machines.
+
 ---
 
 ## Table of Contents
@@ -68,7 +71,7 @@ easily understood from just looking at the code.
 
 1. Clone the library into your preferred directory:
 - `cd myproject/thirdparty/`
-- `git clone <TODO:replace with project github link>`
+- `git clone https://github.com/Jellycious/microhsm`
 
 2. Include microhsm directory and link to it:
 - In your CMakeLists.txt file:
