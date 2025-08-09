@@ -34,6 +34,7 @@ state machines.
 - **Build as static libary or include directly** - Integrate in any project
 - **Lightweight** - Core library consists of less than 300 lines of code
 - **Zero dependencies** - Library is fully self-contained and does not rely on external libraries
+- **Tracing functionality** - Trace the transitions that your HSM takes
 
 ---
 
@@ -104,31 +105,6 @@ target_include_directories(microhsm PRIVATE
     myproject/myconfig
 )
 ```
-
-
-## Custom configuration options (microhsm\_config.hpp)
-
-### MICROHSM\_ASSERTIONS
-
-When set `MICROHSM_ASSERTIONS` is defined to be `1` microhsm will verify certain conditions regarding the HSM
-structure. It will also do additional checks during event dispatching
-
-To asser the user has to provide its own `MICROHSM_ASSERT(expr)` hook. This
-hook gets called with expressions which require asserting. If an expr evaluates
-to false, there is an critical issue.
-
-### MICROHSM\_TRACING
-
-When set to `MICROHSM_TRACING` is defined to be `1` microhsm will call special hooks during the event dispatching.
-This can be used to verify and debug you HSMs. One has to provide several hooks
-that will be called during event matching and taking of transitions.
-
-The hooks that should be implemented are
-
-- `MICROHSM_TRACE_ENTRY(id)` - Called upon entering a state
-- `MICROHSM_TRACE_EXIT(id)` - Called upon exiting a state
-- `MICROHSM_TRACE_DISPATCH_IGNORED(event)` - Called when an event was ignored by HSM
-- `MICROHSM_TRACE_DISPATCH_MATCHED(event, id)` - Called when an event matched a transition on a state
 
 ---
 
@@ -475,4 +451,27 @@ HSM_DEFINE_STATE_MATCH(SomeState) {
 }
 ```
 
+## Custom configuration options (microhsm\_config.hpp)
+
+### MICROHSM\_ASSERTIONS
+
+When set `MICROHSM_ASSERTIONS` is defined to be `1` microhsm will verify certain conditions regarding the HSM
+structure. It will also do additional checks during event dispatching
+
+To asser the user has to provide its own `MICROHSM_ASSERT(expr)` hook. This
+hook gets called with expressions which require asserting. If an expr evaluates
+to false, there is an critical issue.
+
+### MICROHSM\_TRACING
+
+When set to `MICROHSM_TRACING` is defined to be `1` microhsm will call special hooks during the event dispatching.
+This can be used to verify and debug you HSMs. One has to provide several hooks
+that will be called during event matching and taking of transitions.
+
+The hooks that should be implemented are
+
+- `MICROHSM_TRACE_ENTRY(id)` - Called upon entering a state
+- `MICROHSM_TRACE_EXIT(id)` - Called upon exiting a state
+- `MICROHSM_TRACE_DISPATCH_IGNORED(event)` - Called when an event was ignored by HSM
+- `MICROHSM_TRACE_DISPATCH_MATCHED(event, id)` - Called when an event matched a transition on a state
 
