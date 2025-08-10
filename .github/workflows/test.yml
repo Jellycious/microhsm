@@ -1,7 +1,6 @@
 name: Test
 
-permissions:
-  actions: read
+permissions: read-all
 
 on:
   workflow_run:
