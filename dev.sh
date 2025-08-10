@@ -92,7 +92,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Prepare build
-if [[ -n $BUILDTEST ]]; then
+if [[ -n $BUILD_TEST ]]; then
     BUILD_OPTS="${BUILD_OPTS} -DMICROHSM_BUILD_TESTS=ON"
 fi
 if [[ -n $BUILDEXAMPLES ]]; then

@@ -8,7 +8,16 @@
 #include <assert.h>
 
 // Provide assertion hook
-#define MICROHSM_ASSERT(expr) assert(expr)
+
+#ifdef NDEBUG
+    // Prevent unused variable compiler warning when building tests as release
+    #define MICROHSM_ASSERT(expr) do {  \
+        bool res = expr;                \
+        (void) res;                     \
+    } while(0);
+#else
+    #define MICROHSM_ASSERT(expr) assert(expr)
+#endif
 
 
 // Enable tracing
