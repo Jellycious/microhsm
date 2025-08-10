@@ -48,12 +48,12 @@ clean() {
 while [[ $# -gt 0 ]]; do
     case $1 in
         -t|--test)
-            BUILDTEST=1
+            BUILD_TEST=1
             shift
             ;;
         -d|--dev)
             RUNDEV=1
-            BUILDTEST=1
+            BUILD_TEST=1
             shift
             ;;
         -r|--release)
