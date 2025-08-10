@@ -5,6 +5,8 @@
 A lightweight, but powerful embedded-friendly C++ library implementing UML-compliant hierarchical
 state machines.
 
+[![Build and Test](https://github.com/Jellycious/microhsm/actions/workflows/build-and-test.yml/badge.svg?branch=master)](https://github.com/Jellycious/microhsm/actions/workflows/build-and-test.yml)
+
 ---
 
 ## Table of Contents
