@@ -1,0 +1,39 @@
+name: Test
+
+permissions:
+  actions: read
+
+on:
+  workflow_run:
+      workflows: {"Build"}
+      types:
+        - completed
+
+env:
+  BUILD_TYPE: Release
+  BUILD_TESTS: ON
+  CODE_COVERAGE: ON
+
+job:
+  test:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+          name: build-artifact
+          path: ${{github.workspace}}/build
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: Jellycious/microhsm
+
+    - name: Give executable permissions
+      working-directory: ${{github.workspace}}/build
+      run: chmod -R +x ./bin/*
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ctest -C ${{env.BUILD_TYPE}}
